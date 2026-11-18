@@ -1,0 +1,8 @@
+# Server Ignore
+node_modules/
+.env
+.env.*
+!.env.example
+*.log
+uploads/
+temp/

@@ -1,0 +1,15 @@
+{
+  "name": "thefampay",
+  "version": "1.0.0",
+  "description": "The FamPay - Instant Digital P2P Wallet & Token Exchange Platform",
+  "private": true,
+  "scripts": {
+    "build": "npm --prefix client run build",
+    "start": "npm --prefix server start",
+    "server": "npm --prefix server start",
+    "client": "npm --prefix client dev"
+  },
+  "keywords": ["thefampay", "wallet", "crypto", "tokens", "fintech"],
+  "author": "The FamPay Team",
+  "license": "UNLICENSED"
+}

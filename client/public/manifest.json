@@ -1,0 +1,28 @@
+{
+  "short_name": "The FamPay",
+  "name": "The FamPay — Instant Crypto Token Wallet & Exchange",
+  "icons": [
+    {
+      "src": "/favicon.svg",
+      "type": "image/svg+xml",
+      "sizes": "any",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "/icon-192.png",
+      "type": "image/png",
+      "sizes": "192x192"
+    },
+    {
+      "src": "/icon-512.png",
+      "type": "image/png",
+      "sizes": "512x512"
+    }
+  ],
+  "start_url": "/",
+  "background_color": "#0B081B",
+  "theme_color": "#6D28D9",
+  "display": "standalone",
+  "orientation": "portrait"
+}
+

@@ -1,0 +1,44 @@
+# ==========================================
+# The FamPay Git Ignore Configuration
+# ==========================================
+
+# 1. Environment & Secret Credentials (STRICTLY FORBIDDEN FROM COMMITS)
+.env
+.env.local
+.env.development
+.env.test
+.env.production
+*.env
+!*.env.example
+server/.env
+client/.env
+
+# 2. Dependencies
+node_modules/
+*/node_modules/
+package-lock.json.bak
+
+# 3. Production Builds
+dist/
+*/dist/
+build/
+*/build/
+
+# 4. Logs & Temp Artifacts
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+.pnpm-debug.log*
+scratch/
+temp/
+tmp/
+
+# 5. OS & Editor Metadata
+.DS_Store
+Thumbs.db
+ehthumbs.db
+.idea/
+.vscode/
+*.swp
+*.swo
