@@ -302,6 +302,41 @@ async function sendBrevoWelcomeEmail({ toEmail, toName, uid }) {
   }
 }
 
+// Root Welcome / Health Landing Page
+app.get('/', (req, res) => {
+  res.send(`
+    <!DOCTYPE html>
+    <html lang="en">
+    <head>
+      <meta charset="UTF-8">
+      <meta name="viewport" content="width=device-width, initial-scale=1.0">
+      <title>The FamPay API Server</title>
+      <style>
+        body { font-family: system-ui, -apple-system, sans-serif; background: #060812; color: #fff; display: flex; align-items: center; justify-content: center; height: 100vh; margin: 0; }
+        .card { background: #0D1322; border: 1px solid #1E293B; border-radius: 28px; padding: 40px; max-width: 440px; width: 90%; text-align: center; box-shadow: 0 25px 60px rgba(0,0,0,0.6); }
+        .badge { display: inline-flex; align-items: center; gap: 8px; background: rgba(16, 185, 129, 0.15); color: #34D399; border: 1px solid rgba(16, 185, 129, 0.3); border-radius: 9999px; padding: 6px 14px; font-size: 12px; font-weight: 800; }
+        .dot { width: 8px; height: 8px; border-radius: 50%; background: #10B981; }
+        h1 { margin: 18px 0 8px; font-size: 24px; font-weight: 900; letter-spacing: -0.5px; }
+        p { color: #94A3B8; font-size: 13px; margin: 0 0 24px; }
+        .endpoints { background: #070B14; border: 1px solid #172033; border-radius: 16px; padding: 14px; text-align: left; font-family: monospace; font-size: 12px; color: #A78BFA; line-height: 1.8; }
+      </style>
+    </head>
+    <body>
+      <div class="card">
+        <div class="badge"><span class="dot"></span> Online & Operational</div>
+        <h1>The FamPay Backend API</h1>
+        <p>Production Cloud Microservice running on Render & Supabase</p>
+        <div class="endpoints">
+          <div>⚡ GET /api/health &rarr; 200 OK</div>
+          <div>⚡ GET /api/settings &rarr; Global Config</div>
+          <div>⚡ GET /api/user/channels &rarr; Active Gateways</div>
+        </div>
+      </div>
+    </body>
+    </html>
+  `);
+});
+
 // Health Check
 app.get('/api/health', (req, res) => {
   res.json({ status: 'ok', app: 'The FamPay', timestamp: new Date().toISOString() });

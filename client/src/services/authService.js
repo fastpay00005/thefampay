@@ -5,7 +5,7 @@
 
 const API_BASE = import.meta.env.VITE_API_BASE_URL 
   ? `${import.meta.env.VITE_API_BASE_URL.replace(/\/$/, '')}/api/auth` 
-  : '/api/auth';
+  : (import.meta.env.PROD ? 'https://thefampay.onrender.com/api/auth' : '/api/auth');
 
 async function safeFetchJson(url, options = {}) {
   try {
