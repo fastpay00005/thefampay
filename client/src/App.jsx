@@ -46,11 +46,13 @@ import { AdminSpinPage } from './admin/pages/AdminSpinPage';
 import { ToastNotification } from './components/common/ToastNotification';
 import { MaintenanceBarrier } from './components/common/MaintenanceBarrier';
 import { ProfileCompletionModal } from './components/common/ProfileCompletionModal';
+import { ScrollToTop } from './components/common/ScrollToTop';
 
 export default function App() {
   return (
     <AppProvider>
       <BrowserRouter>
+        <ScrollToTop />
         <ToastNotification />
         <ProfileCompletionModal />
         <MaintenanceBarrier>

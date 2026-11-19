@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import { NavLink, useLocation, useNavigate } from 'react-router-dom';
 import { useApp } from '../../context/AppContext';
 import { NavHome3D, NavDeposit3D, NavTools3D, NavTeams3D, NavAssets3D } from '../common/PremiumIcons3D';
@@ -15,6 +15,14 @@ export const AppShell = ({ children, hideHeader = false, hideBottomNav = false, 
   const navigate = useNavigate();
   const [showSupportModal, setShowSupportModal] = useState(false);
   const unreadCount = notifications.filter(n => !n.read).length;
+  const mainRef = useRef(null);
+
+  // Auto scroll to top on every route change
+  useEffect(() => {
+    if (mainRef.current) {
+      mainRef.current.scrollTop = 0;
+    }
+  }, [location.pathname, location.search]);
 
   const currentAppName = appName || 'The FamPay';
 
@@ -193,7 +201,7 @@ export const AppShell = ({ children, hideHeader = false, hideBottomNav = false, 
         )}
 
         {/* Scrollable Page Body */}
-        <main className="flex-1 overflow-y-auto no-scrollbar pb-24">
+        <main ref={mainRef} className="flex-1 overflow-y-auto no-scrollbar pb-24">
           {children}
         </main>
 
