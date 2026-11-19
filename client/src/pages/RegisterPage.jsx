@@ -68,21 +68,37 @@ export const RegisterPage = () => {
   };
 
   return (
-    <div className="min-h-screen desktop-ambient-bg flex justify-center items-center p-0 sm:py-6 sm:px-4">
-      <div className="w-full sm:max-w-[428px] min-h-screen sm:min-h-[880px] sm:max-h-[920px] bg-surface-bg flex flex-col justify-between relative sm:rounded-[40px] sm:shadow-[0_25px_60px_-15px_rgba(0,0,0,0.7),0_0_0_12px_#1E1638] overflow-hidden border-0 sm:border-2 border-purple-500/20 p-6 overflow-y-auto no-scrollbar">
+    <div className="min-h-[100dvh] desktop-ambient-bg flex justify-center items-center p-3 sm:py-6 sm:px-4">
+      <div className="w-full sm:max-w-[420px] bg-surface-bg flex flex-col justify-center relative sm:rounded-[40px] sm:shadow-[0_25px_60px_-15px_rgba(0,0,0,0.7),0_0_0_12px_#1E1638] overflow-hidden border-0 sm:border-2 border-purple-500/20 p-4 sm:p-6 overflow-y-auto no-scrollbar">
         
         {/* Top Header */}
-        <div className="pt-4 text-center space-y-1">
-          <div className="w-12 h-12 rounded-2xl bg-gradient-to-tr from-[#6D28D9] to-indigo-600 mx-auto flex items-center justify-center text-white font-black text-lg shadow-md mb-1">
+        <div className="text-center space-y-1 mb-2.5 pt-1 sm:pt-2">
+          <div className="w-10 h-10 sm:w-12 sm:h-12 rounded-2xl bg-gradient-to-tr from-[#6D28D9] to-indigo-600 mx-auto flex items-center justify-center text-white font-black text-base sm:text-lg shadow-md mb-1">
             FP
           </div>
-          <h1 className="text-2xl font-black text-slate-900 tracking-tight">Create Account</h1>
-          <p className="text-xs text-slate-500">{appName} Digital Wallet Registration</p>
+          <h1 className="text-xl sm:text-2xl font-black text-slate-900 tracking-tight">Create Account</h1>
+          <p className="text-[11px] sm:text-xs text-slate-500">{appName} Digital Wallet Registration</p>
         </div>
 
-        {/* Form Container */}
-        <div className="bg-white rounded-3xl p-5 border border-purple-100 shadow-card space-y-3 my-3">
-          <form onSubmit={handleRegister} className="space-y-2.5">
+        {/* Form Container with Segmented Tabs */}
+        <div className="bg-white rounded-3xl p-4 sm:p-5 border border-purple-100 shadow-card space-y-2.5">
+          {/* Quick Segmented Switcher (Sign In vs Register) */}
+          <div className="flex bg-slate-100 p-1 rounded-2xl">
+            <Link
+              to="/login"
+              className="flex-1 py-1.5 sm:py-2 rounded-xl text-xs font-bold text-slate-500 hover:text-purple-700 transition-all text-center"
+            >
+              Sign In
+            </Link>
+            <button
+              type="button"
+              className="flex-1 py-1.5 sm:py-2 rounded-xl text-xs font-black bg-white text-slate-900 shadow-xs transition-all"
+            >
+              Register
+            </button>
+          </div>
+
+          <form onSubmit={handleRegister} className="space-y-2">
             <div>
               <label className="text-xs font-bold text-slate-700 block mb-1">Full Name</label>
               <div className="relative">
@@ -207,7 +223,7 @@ export const RegisterPage = () => {
             <button
               type="submit"
               disabled={loading}
-              className="w-full bg-gradient-to-r from-[#6D28D9] to-indigo-800 hover:from-[#5B1EB7] hover:to-indigo-900 text-white font-extrabold py-3.5 rounded-2xl shadow-lg shadow-purple-900/25 active:scale-98 transition-all flex items-center justify-center gap-2 text-xs mt-2 disabled:opacity-70"
+              className="w-full bg-gradient-to-r from-[#6D28D9] to-indigo-800 hover:from-[#5B1EB7] hover:to-indigo-900 text-white font-extrabold py-3 sm:py-3.5 rounded-2xl shadow-lg shadow-purple-900/25 active:scale-98 transition-all flex items-center justify-center gap-2 text-xs mt-2 disabled:opacity-70 cursor-pointer"
             >
               {loading ? (
                 <>
@@ -222,16 +238,16 @@ export const RegisterPage = () => {
               )}
             </button>
           </form>
-        </div>
 
-        {/* Footer Link */}
-        <div className="pb-4 text-center">
-          <p className="text-xs text-slate-500">
-            Already registered?{' '}
-            <Link to="/login" className="font-extrabold text-[#6D28D9] hover:underline">
-              Sign In
-            </Link>
-          </p>
+          {/* Integrated Immediate Sign In Callout */}
+          <div className="pt-2 text-center border-t border-slate-100">
+            <p className="text-xs text-slate-500 font-medium">
+              Already registered?{' '}
+              <Link to="/login" className="font-black text-[#6D28D9] hover:underline">
+                Sign In &rarr;
+              </Link>
+            </p>
+          </div>
         </div>
 
       </div>
