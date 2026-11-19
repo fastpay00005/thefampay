@@ -110,46 +110,43 @@ export const RegisterPage = () => {
       {/* Centered Mobile Device Frame (Edge-to-edge on mobile, sleek frame on desktop) */}
       <div className="w-full sm:max-w-[430px] min-h-screen sm:min-h-0 sm:max-h-[95vh] bg-[#FAF9FE] flex flex-col justify-between relative sm:rounded-[36px] sm:shadow-[0_25px_60px_-15px_rgba(0,0,0,0.7),0_0_0_12px_#1E1638] sm:border-2 sm:border-purple-500/20 overflow-y-auto no-scrollbar">
         
-        {/* Top Hero Branded Header - Full Bleed Seamless Curved Luxury Design */}
-        <div className="relative bg-gradient-to-br from-[#4C1D95] via-[#6D28D9] to-[#2E0854] text-white pt-10 sm:pt-12 pb-7 px-6 rounded-b-[36px] sm:rounded-b-[40px] shadow-xl shadow-purple-950/30 overflow-hidden border-b border-purple-400/25 shrink-0">
-          {/* Ambient Lighting Orbs */}
-          <div className="absolute -top-12 -right-12 w-40 h-40 bg-purple-400/25 rounded-full blur-2xl pointer-events-none" />
-          <div className="absolute -bottom-12 -left-12 w-36 h-36 bg-amber-400/15 rounded-full blur-xl pointer-events-none" />
+        {/* Top Hero Branded Header (Separated from top edge with rounded corners) */}
+        <div className="pt-3.5 sm:pt-4 px-3.5 sm:px-4 shrink-0">
+          <div className="relative bg-gradient-to-br from-[#4C1D95] via-[#6D28D9] to-[#2E0854] text-white pt-6 pb-5 px-5 rounded-[28px] sm:rounded-[32px] shadow-xl shadow-purple-950/25 overflow-hidden border border-purple-400/25">
+            {/* Ambient Lighting Orbs */}
+            <div className="absolute -top-10 -right-10 w-36 h-36 bg-purple-400/25 rounded-full blur-2xl pointer-events-none" />
+            <div className="absolute -bottom-10 -left-10 w-32 h-32 bg-amber-400/15 rounded-full blur-xl pointer-events-none" />
 
-          <div className="relative z-10 flex flex-col items-center text-center">
-            {/* 3D Animated Floating Brand Emblem */}
-            <div className="relative mb-2.5 flex items-center justify-center">
-              {/* Soft Ambient Pulsing Aura */}
-              <div className="absolute w-20 h-20 bg-amber-400/20 rounded-full blur-xl animate-pulse pointer-events-none" />
-              
-              <div className="relative w-14 h-14 rounded-2xl bg-gradient-to-tr from-amber-400 via-amber-300 to-yellow-500 p-0.5 shadow-[0_10px_25px_rgba(245,158,11,0.4)] border border-amber-200/50 hover:scale-105 transition-transform duration-300 flex items-center justify-center">
-                <div className="w-full h-full rounded-[14px] bg-gradient-to-br from-purple-950 via-[#5B1EB7] to-[#2E0854] flex items-center justify-center relative overflow-hidden">
-                  {/* Specular Diagonal Reflection */}
-                  <div className="absolute inset-0 bg-gradient-to-tr from-white/35 via-transparent to-transparent pointer-events-none" />
-                  {/* Animated Golden Lightning Bolt */}
-                  <Zap className="w-7 h-7 text-amber-300 fill-amber-400 drop-shadow-[0_2px_10px_rgba(251,191,36,0.9)] animate-pulse" />
-                </div>
+            <div className="relative z-10 flex flex-col items-center text-center">
+              {/* 3D Animated Floating Brand Emblem */}
+              <div className="relative mb-2 flex items-center justify-center">
+                <div className="absolute w-16 h-16 bg-amber-400/20 rounded-full blur-xl animate-pulse pointer-events-none" />
+                
+                <div className="relative w-12 h-12 rounded-2xl bg-gradient-to-tr from-amber-400 via-amber-300 to-yellow-500 p-0.5 shadow-[0_8px_20px_rgba(245,158,11,0.35)] border border-amber-200/50 hover:scale-105 transition-transform duration-300 flex items-center justify-center">
+                  <div className="w-full h-full rounded-[14px] bg-gradient-to-br from-purple-950 via-[#5B1EB7] to-[#2E0854] flex items-center justify-center relative overflow-hidden">
+                    <div className="absolute inset-0 bg-gradient-to-tr from-white/35 via-transparent to-transparent pointer-events-none" />
+                    <Zap className="w-6 h-6 text-amber-300 fill-amber-400 drop-shadow-[0_2px_8px_rgba(251,191,36,0.9)] animate-pulse" />
+                  </div>
 
-                {/* Floating Sparkle Pin */}
-                <div className="absolute -top-1.5 -right-1.5 w-5 h-5 rounded-full bg-amber-400 border-2 border-purple-900 flex items-center justify-center shadow-md">
-                  <Sparkles className="w-3 h-3 text-purple-950 animate-spin" />
+                  <div className="absolute -top-1 -right-1 w-4.5 h-4.5 rounded-full bg-amber-400 border-2 border-purple-900 flex items-center justify-center shadow-xs">
+                    <Sparkles className="w-2.5 h-2.5 text-purple-950 animate-spin" />
+                  </div>
                 </div>
               </div>
-            </div>
 
-            <h1 className="text-2xl sm:text-3xl font-black text-white tracking-tight leading-tight">
-              Create VIP Account
-            </h1>
-            
-            {/* Live Platform Status Pill */}
-            <div className="mt-2 inline-flex items-center gap-2 bg-white/10 backdrop-blur-md border border-white/20 px-3.5 py-1 rounded-full shadow-inner">
-              <span className="relative flex h-2 w-2">
-                <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
-                <span className="relative inline-flex rounded-full h-2 w-2 bg-emerald-400"></span>
-              </span>
-              <span className="text-[11px] font-bold text-purple-100 tracking-wide">
-                Join {appName} • Instant 2% Bonus
-              </span>
+              <h1 className="text-xl sm:text-2xl font-black text-white tracking-tight leading-tight">
+                Create VIP Account
+              </h1>
+              
+              <div className="mt-1.5 inline-flex items-center gap-2 bg-white/10 backdrop-blur-md border border-white/20 px-3 py-0.5 rounded-full shadow-inner">
+                <span className="relative flex h-2 w-2">
+                  <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
+                  <span className="relative inline-flex rounded-full h-2 w-2 bg-emerald-400"></span>
+                </span>
+                <span className="text-[10px] sm:text-[11px] font-bold text-purple-100 tracking-wide">
+                  Join {appName} • Instant 2% Bonus
+                </span>
+              </div>
             </div>
           </div>
         </div>
