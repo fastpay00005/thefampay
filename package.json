@@ -4,8 +4,8 @@
   "description": "The FamPay - Instant Digital P2P Wallet & Token Exchange Platform",
   "private": true,
   "scripts": {
-    "build": "npm --prefix client run build",
-    "start": "npm --prefix server start",
+    "build": "cd client && npm install && npm run build && cd .. && node -e \"const fs=require('fs'); fs.cpSync('client/dist', 'dist', {recursive: true});\"",
+    "start": "node server/index.js",
     "server": "npm --prefix server start",
     "client": "npm --prefix client dev"
   },
@@ -13,4 +13,3 @@
   "author": "The FamPay Team",
   "license": "UNLICENSED"
 }
-
