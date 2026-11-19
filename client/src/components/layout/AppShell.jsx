@@ -50,49 +50,32 @@ export const AppShell = ({ children, hideHeader = false, hideBottomNav = false, 
         isDark ? 'bg-[#0B0F19] text-slate-100' : 'bg-[#FAF9FE] text-slate-900'
       }`}>
         
-        {/* Top Header - Ultra Clean Native App Style with Generous Status Bar Clearance */}
+        {/* Top Header - Ultra Clean Native App Style with Safe Area Padding */}
         {!hideHeader && (
-          <header className={`px-4 sm:px-5 pt-12 sm:pt-14 pb-3.5 sm:pb-4 rounded-b-[28px] sm:rounded-b-[32px] relative z-40 border-b transition-all duration-200 ${
+          <header className={`px-4 sm:px-5 pt-8 sm:pt-9 pb-4 sm:pb-5 rounded-b-[28px] sm:rounded-b-[32px] relative z-40 border-b transition-all duration-200 ${
             isDark 
-              ? 'bg-[#0E1528]/95 backdrop-blur-xl text-white border-slate-800 shadow-xl shadow-black/20' 
-              : 'bg-white/95 backdrop-blur-xl text-slate-800 border-purple-100/90 shadow-[0_4px_25px_rgba(109,40,217,0.07)]'
+              ? 'bg-gradient-to-r from-[#1A1230] via-[#2A1654] to-[#160D2D] text-white border-purple-900/50 shadow-xl shadow-purple-950/40' 
+              : 'bg-gradient-to-r from-[#5B1EB7] via-[#6D28D9] to-[#4C1D95] text-white border-purple-400/20 shadow-xl shadow-purple-900/25'
           }`}>
             <div className="flex items-center justify-between gap-2.5 sm:gap-3">
-              {/* Home Page: User Avatar + Account Tag + Greeting | Inner Pages: Back Button + Title */}
+              {/* Home Page: User Avatar + Greeting | Inner Pages: Back Button + Page Title */}
               {location.pathname === '/' || !title ? (
                 <div 
                   onClick={() => navigate('/profile')}
-                  className="flex items-center gap-2.5 sm:gap-3 min-w-0 flex-1 cursor-pointer active:scale-95 transition-transform group"
-                  title="View Profile & Account"
+                  className="flex items-center gap-2.5 sm:gap-3 min-w-0 flex-1 cursor-pointer active:scale-95 transition-transform group shrink-0"
+                  title="View Profile"
                 >
-                  <div className="relative shrink-0">
-                    <UserAvatar 
-                      user={user}
-                      size="md" 
-                      showOnlineDot={true} 
-                    />
-                    <div className={`absolute -bottom-1 -right-1 w-4 h-4 rounded-full flex items-center justify-center border shadow-xs ${
-                      isDark ? 'bg-purple-600 border-[#0E1528] text-white' : 'bg-[#6D28D9] border-white text-white'
-                    }`}>
-                      <User className="w-2.5 h-2.5 stroke-[2.5]" />
-                    </div>
-                  </div>
-
+                  <UserAvatar 
+                    user={user}
+                    size="md" 
+                    showOnlineDot={true} 
+                  />
                   <div className="min-w-0 flex-1">
-                    <div className="flex items-center gap-1.5 leading-none">
-                      <span className={`text-[10px] font-extrabold uppercase tracking-wider ${
-                        isDark ? 'text-purple-300' : 'text-purple-600'
-                      }`}>
-                        My Account
-                      </span>
-                      <span className="w-1 h-1 rounded-full bg-slate-300 dark:bg-slate-600" />
-                      <span className="text-[10px] font-mono text-slate-400">
-                        {user.uid || 'VIP'}
-                      </span>
-                    </div>
-                    <h2 className="text-sm sm:text-base font-black tracking-tight leading-tight mt-1 truncate flex items-center gap-1">
-                      <span>{displayName}</span>
-                      <ChevronRight className="w-3.5 h-3.5 text-slate-400 group-hover:text-purple-500 transition-colors shrink-0" />
+                    <span className="text-[10px] font-bold text-purple-200/90 uppercase tracking-wider block leading-none">
+                      Welcome back
+                    </span>
+                    <h2 className="text-sm sm:text-base font-black text-white tracking-tight leading-tight mt-1 truncate">
+                      {displayName}
                     </h2>
                   </div>
                 </div>
@@ -100,64 +83,53 @@ export const AppShell = ({ children, hideHeader = false, hideBottomNav = false, 
                 <div className="flex items-center gap-2.5 min-w-0 flex-1">
                   <button
                     onClick={() => navigate(-1)}
-                    className={`w-9 h-9 sm:w-10 sm:h-10 rounded-2xl border flex items-center justify-center active:scale-95 transition-all shadow-xs shrink-0 ${
-                      isDark 
-                        ? 'bg-slate-800/80 hover:bg-slate-800 border-slate-700 text-white' 
-                        : 'bg-slate-100 hover:bg-slate-200 border-slate-200 text-slate-800'
-                    }`}
+                    className="w-9 h-9 sm:w-10 sm:h-10 rounded-2xl bg-white/15 backdrop-blur-md border border-white/20 flex items-center justify-center text-white active:scale-95 transition-all hover:bg-white/25 shadow-xs shrink-0"
                     title="Go Back"
                   >
                     <ArrowLeft className="w-5 h-5 stroke-[2.5]" />
                   </button>
                   <div className="min-w-0 flex-1">
-                    <span className={`text-[10px] font-bold uppercase tracking-wider block leading-tight ${
-                      isDark ? 'text-purple-300' : 'text-purple-600'
-                    }`}>
-                      {currentAppName}
-                    </span>
-                    <h2 className="text-sm sm:text-base font-black tracking-tight leading-tight truncate">
+                    <span className="text-[10px] font-bold text-purple-200 uppercase tracking-wider block leading-tight">{currentAppName}</span>
+                    <h2 className="text-sm sm:text-base font-black text-white tracking-tight leading-tight truncate">
                       {title}
                     </h2>
                   </div>
                 </div>
               )}
 
-              {/* Action Buttons: Account (User), Support (Headphones), Notifications (Bell), Token (Coins) */}
+              {/* Action Buttons: Account (User), Token (Coins), Support (Headphones), Notifications (Bell) */}
               <div className="flex items-center gap-1.5 sm:gap-2 shrink-0">
-                {/* 1. Dedicated Account Button (User Profile) */}
+                {/* 1. Account / Profile Button (Requested User Icon) */}
                 <button
                   onClick={() => navigate('/profile')}
-                  className={`w-9 h-9 sm:w-10 sm:h-10 rounded-2xl border flex items-center justify-center shadow-xs active:scale-95 transition-all ${
-                    isDark 
-                      ? 'bg-purple-500/15 hover:bg-purple-500/25 border-purple-500/30 text-purple-300' 
-                      : 'bg-purple-50 hover:bg-purple-100 border-purple-200/80 text-purple-700'
-                  }`}
+                  className="w-9 h-9 sm:w-10 sm:h-10 rounded-2xl bg-white/15 backdrop-blur-md border border-white/20 flex items-center justify-center text-white shadow-md active:scale-95 transition-all hover:bg-white/25"
                   title="My Account"
                 >
                   <User className="w-4.5 h-4.5 stroke-[2.3]" />
                 </button>
 
-                {/* 2. 24/7 VIP Customer Support Popup */}
+                {/* 2. Token Quick Hub Shortcut (PDF §1.2) */}
+                <button
+                  onClick={() => navigate('/token')}
+                  className="w-9 h-9 sm:w-10 sm:h-10 rounded-2xl bg-gradient-to-tr from-amber-400 via-yellow-500 to-amber-600 border border-amber-200/40 flex items-center justify-center shadow-md active:scale-95 transition-all hover:brightness-110"
+                  title="Token & Cash Out"
+                >
+                  <Coins className="w-4.5 h-4.5 sm:w-5 sm:h-5 text-white drop-shadow-xs" />
+                </button>
+
+                {/* 3. 24/7 VIP Support Popup Button (PDF §1.2 & §2.19) */}
                 <button
                   onClick={() => setShowSupportModal(true)}
-                  className={`w-9 h-9 sm:w-10 sm:h-10 rounded-2xl border flex items-center justify-center shadow-xs active:scale-95 transition-all ${
-                    isDark 
-                      ? 'bg-slate-800/80 hover:bg-slate-800 border-slate-700 text-slate-300' 
-                      : 'bg-slate-50 hover:bg-slate-100 border-slate-200/80 text-slate-600'
-                  }`}
+                  className="w-9 h-9 sm:w-10 sm:h-10 rounded-2xl bg-white/15 backdrop-blur-md border border-white/20 flex items-center justify-center shadow-md active:scale-95 transition-all hover:bg-white/25 text-purple-200"
                   title="24/7 Customer Support"
                 >
                   <Headphones className="w-4 h-4 sm:w-4.5 sm:h-4.5" />
                 </button>
 
-                {/* 3. Notification Bell with Badge */}
+                {/* 4. Notification Bell with Badge */}
                 <button 
                   onClick={() => navigate('/notifications')}
-                  className={`w-9 h-9 sm:w-10 sm:h-10 rounded-2xl border flex items-center justify-center shadow-xs relative active:scale-95 transition-all ${
-                    isDark 
-                      ? 'bg-amber-500/15 hover:bg-amber-500/25 border-amber-500/30 text-amber-300' 
-                      : 'bg-amber-50 hover:bg-amber-100 border-amber-200/80 text-amber-600'
-                  }`}
+                  className="w-9 h-9 sm:w-10 sm:h-10 rounded-2xl bg-white/15 backdrop-blur-md border border-white/20 flex items-center justify-center shadow-md relative active:scale-95 transition-all hover:bg-white/25 text-amber-300 fill-amber-300"
                   title="Notifications"
                 >
                   <Bell className="w-4 h-4 sm:w-4.5 sm:h-4.5 fill-current" />
