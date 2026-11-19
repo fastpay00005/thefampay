@@ -4,6 +4,7 @@ import { useApp } from '../context/AppContext';
 import { authService } from '../services/authService';
 import { signInWithGoogle } from '../services/supabaseClient';
 import { User, Mail, Smartphone, Lock, Gift, ArrowRight, Loader2, ShieldCheck, Sparkles, Zap } from 'lucide-react';
+import { TermsModal } from '../components/common/TermsModal';
 
 const GoogleIcon = () => (
   <svg className="w-4 h-4 shrink-0" viewBox="0 0 24 24">
@@ -45,6 +46,7 @@ export const RegisterPage = () => {
 
   const [loading, setLoading] = useState(false);
   const [googleLoading, setGoogleLoading] = useState(false);
+  const [showTermsModal, setShowTermsModal] = useState(false);
 
   useEffect(() => {
     const ref = searchParams.get('ref') || searchParams.get('invite');
@@ -314,10 +316,22 @@ export const RegisterPage = () => {
                 name="agreeTerms"
                 checked={formData.agreeTerms}
                 onChange={handleChange}
-                className="w-4 h-4 rounded text-[#6D28D9] focus:ring-[#6D28D9]"
+                className="w-4 h-4 rounded text-[#6D28D9] focus:ring-[#6D28D9] cursor-pointer"
               />
               <label htmlFor="terms" className="cursor-pointer select-none">
-                I agree to the <span className="text-[#6D28D9] font-bold">Terms & Conditions</span>
+                I agree to the{' '}
+                <button
+                  type="button"
+                  onClick={(e) => {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    setShowTermsModal(true);
+                  }}
+                  className="text-[#6D28D9] font-bold hover:underline cursor-pointer inline p-0 bg-transparent border-0 align-baseline"
+                  title="Click to view Terms & Conditions"
+                >
+                  Terms & Conditions
+                </button>
               </label>
             </div>
 
@@ -358,6 +372,13 @@ export const RegisterPage = () => {
             <span>256-Bit SSL Encrypted • Zero-KYC Protected</span>
           </div>
         </div>
+
+        {/* Terms & Conditions Popup Modal */}
+        <TermsModal 
+          isOpen={showTermsModal} 
+          onClose={() => setShowTermsModal(false)} 
+          onAgree={() => setFormData(prev => ({ ...prev, agreeTerms: true }))}
+        />
 
       </div>
     </div>

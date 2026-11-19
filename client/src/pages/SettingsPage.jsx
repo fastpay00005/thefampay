@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { AppShell } from '../components/layout/AppShell';
 import { useApp } from '../context/AppContext';
 import { LogoutModal } from '../components/common/LogoutModal';
+import { TermsModal } from '../components/common/TermsModal';
 import { apiService } from '../services/apiService';
 import { 
   Sun, Moon, Smartphone, ShieldCheck, FileText, ChevronRight,
@@ -359,74 +360,10 @@ export const SettingsPage = () => {
       />
 
       {/* TERMS & CONDITIONS FULL MODAL */}
-      {showTermsModal && (
-        <div className="fixed inset-0 z-50 bg-black/80 backdrop-blur-sm flex items-center justify-center p-4">
-          <div className={`w-full max-w-md max-h-[85vh] rounded-3xl p-6 shadow-2xl flex flex-col border ${
-            isDark ? 'bg-[#0D1527] border-slate-800 text-white' : 'bg-white border-purple-100 text-slate-900'
-          }`}>
-            <div className="flex items-center justify-between pb-3 border-b border-slate-200 dark:border-slate-800">
-              <div className="flex items-center gap-2">
-                <FileText className="w-5 h-5 text-purple-600 dark:text-purple-400" />
-                <h3 className="text-base font-black">Terms & Conditions</h3>
-              </div>
-              <button 
-                onClick={() => setShowTermsModal(false)}
-                className="w-8 h-8 rounded-full bg-slate-100 dark:bg-slate-800 flex items-center justify-center text-slate-500 hover:text-slate-900"
-              >
-                <X className="w-4 h-4" />
-              </button>
-            </div>
-
-            <div className="flex-1 overflow-y-auto no-scrollbar py-4 space-y-3.5 text-xs text-slate-600 dark:text-slate-300 leading-relaxed">
-              <div className="p-3 rounded-2xl bg-purple-50 dark:bg-purple-950/40 border border-purple-200 dark:border-purple-800/40 text-purple-900 dark:text-purple-200">
-                <strong>Zero-KYC Policy:</strong> The FamPay operates on a digital token exchange ledger. No identity documents (Aadhaar/PAN) are collected or stored on our servers.
-              </div>
-
-              <div>
-                <h4 className="font-black text-slate-900 dark:text-white text-xs mb-1">1. Scope of Service & Virtual Balances</h4>
-                <p>
-                  All monetary deposits made by users are credited directly into official authorized Administrator bank accounts. The balance displayed on this portal acts as a virtual digital exchange ledger for token buy, sell, and commission calculations.
-                </p>
-              </div>
-
-              <div>
-                <h4 className="font-black text-slate-900 dark:text-white text-xs mb-1">2. Deposit Verification & Orders</h4>
-                <p>
-                  Users must submit accurate 12-digit UTR numbers and valid transaction receipts. Any duplicate UTR or fraudulent receipt submission will lead to immediate account suspension and blacklisting.
-                </p>
-              </div>
-
-              <div>
-                <h4 className="font-black text-slate-900 dark:text-white text-xs mb-1">3. Cash Out & Settlement Timelines</h4>
-                <p>
-                  When a user initiates a Cash Out or Token Sell request, funds are reserved from their available ledger and verified manually by the Admin team. Approved settlements are dispatched directly to the user's verified UPI account within 15 to 30 minutes.
-                </p>
-              </div>
-
-              <div>
-                <h4 className="font-black text-slate-900 dark:text-white text-xs mb-1">4. Referral Commission Terms</h4>
-                <p>
-                  Referral bonuses (30% Level 1, 10% Level 2, 5% Level 3) are credited only upon the successful verification and approval of real INR deposits made by downline users.
-                </p>
-              </div>
-
-              <div>
-                <h4 className="font-black text-slate-900 dark:text-white text-xs mb-1">5. Security & 4-Digit PIN</h4>
-                <p>
-                  Users are solely responsible for keeping their 4-digit security transaction PIN confidential. Exceeding 3 failed PIN attempts locks the PIN automatically, requiring Administrator intervention to reset.
-                </p>
-              </div>
-            </div>
-
-            <button
-              onClick={() => setShowTermsModal(false)}
-              className="w-full py-3 rounded-2xl bg-[#6D28D9] text-white font-black text-xs hover:bg-purple-700 shadow-md active:scale-95 transition-all mt-2"
-            >
-              I Understand & Agree
-            </button>
-          </div>
-        </div>
-      )}
+      <TermsModal 
+        isOpen={showTermsModal} 
+        onClose={() => setShowTermsModal(false)} 
+      />
 
     </AppShell>
   );
