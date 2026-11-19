@@ -155,6 +155,11 @@ export const LuckySpinPage = () => {
   const handleSpinClick = async () => {
     if (isSpinning) return;
 
+    if (spinConfig.enabled === false) {
+      showToast('Lucky Spin Wheel is currently paused by Admin.', 'error');
+      return;
+    }
+
     if (!user?.spinChances || user.spinChances <= 0) {
       setShowBuyModal(true);
       return;
@@ -234,6 +239,12 @@ export const LuckySpinPage = () => {
   // Buy Spin Packages Handler
   const handleBuySpins = async () => {
     if (!user?.id) return;
+
+    if (spinConfig.enabled === false) {
+      showToast('Spin purchases are temporarily paused by Admin.', 'error');
+      return;
+    }
+
     const pricePerSpin = spinConfig.spinPrice || 50;
     const totalCost = selectedPackCount * pricePerSpin;
 
@@ -337,6 +348,14 @@ export const LuckySpinPage = () => {
             <div className="mt-3 bg-emerald-500/20 border border-emerald-400/30 rounded-xl px-3 py-1.5 flex items-center gap-2 text-[11px] text-emerald-200 font-bold">
               <Gift className="w-4 h-4 text-emerald-300 shrink-0" />
               <span>You have 1 Welcome Free Spin ready to use! No deposit required.</span>
+            </div>
+          )}
+
+          {/* Admin Paused Alert Banner */}
+          {spinConfig.enabled === false && (
+            <div className="mt-3 bg-amber-500/25 border border-amber-400/40 rounded-xl px-3 py-2 flex items-center gap-2 text-xs text-amber-200 font-bold">
+              <AlertCircle className="w-4 h-4 text-amber-300 shrink-0" />
+              <span>Lucky Spin Wheel is temporarily paused by Admin. Please check back shortly.</span>
             </div>
           )}
         </div>
@@ -491,18 +510,20 @@ export const LuckySpinPage = () => {
                   {/* CENTER METALLIC SPIN HUB BUTTON */}
                   <button
                     onClick={handleSpinClick}
-                    disabled={isSpinning}
+                    disabled={isSpinning || spinConfig.enabled === false}
                     className={`absolute z-20 w-20 h-20 rounded-full border-4 border-white shadow-[0_6px_20px_rgba(0,0,0,0.4)] flex flex-col items-center justify-center text-white active:scale-95 transition-all ${
-                      isSpinning
+                      spinConfig.enabled === false
+                        ? 'bg-slate-700 cursor-not-allowed opacity-80'
+                        : isSpinning
                         ? 'bg-slate-700 cursor-not-allowed opacity-90'
                         : user.spinChances > 0
                         ? 'bg-gradient-to-tr from-amber-500 via-amber-400 to-yellow-300 hover:scale-105 text-slate-950 font-black shadow-amber-500/40'
                         : 'bg-gradient-to-tr from-purple-600 to-indigo-600 hover:scale-105 font-black shadow-purple-600/30'
                     }`}
                   >
-                    <RotateCw className={`w-5 h-5 mb-0.5 ${isSpinning ? 'animate-spin' : ''} ${user.spinChances > 0 ? 'text-slate-950' : 'text-white'}`} />
+                    <RotateCw className={`w-5 h-5 mb-0.5 ${isSpinning ? 'animate-spin' : ''} ${user.spinChances > 0 && spinConfig.enabled !== false ? 'text-slate-950' : 'text-white'}`} />
                     <span className="text-[11px] font-black uppercase tracking-tight">
-                      {isSpinning ? 'SPINNING' : user.spinChances > 0 ? 'SPIN' : 'BUY'}
+                      {spinConfig.enabled === false ? 'PAUSED' : isSpinning ? 'SPINNING' : user.spinChances > 0 ? 'SPIN' : 'BUY'}
                     </span>
                   </button>
 
@@ -512,7 +533,12 @@ export const LuckySpinPage = () => {
 
               {/* ACTION BUTTON & STATUS */}
               <div className="w-full mt-3 space-y-2">
-                {user.spinChances > 0 ? (
+                {spinConfig.enabled === false ? (
+                  <div className="w-full py-3.5 px-4 rounded-2xl bg-amber-500/10 border border-amber-500/30 text-amber-300 font-bold text-xs flex items-center justify-center gap-2 text-center">
+                    <AlertCircle className="w-4 h-4 shrink-0" />
+                    <span>Wheel is paused by Admin. Spins are temporarily unavailable.</span>
+                  </div>
+                ) : user.spinChances > 0 ? (
                   <button
                     onClick={handleSpinClick}
                     disabled={isSpinning}

@@ -7,7 +7,7 @@ import { WarningModal } from '../common/WarningModal';
 import { 
   AlertCircle, CheckCircle, Info, Bell, ArrowLeft, 
   Coins, Headphones, Send, MessageCircle, X, ExternalLink,
-  User, ChevronRight
+  User, ChevronRight, Sparkles, Crown
 } from 'lucide-react';
 
 export const AppShell = ({ children, hideHeader = false, hideBottomNav = false, title }) => {
@@ -52,31 +52,60 @@ export const AppShell = ({ children, hideHeader = false, hideBottomNav = false, 
         
         {/* Top Header - Ultra Clean Native App Style with Safe Area Padding */}
         {!hideHeader && (
-          <header className={`px-4 sm:px-5 pt-8 sm:pt-9 pb-4 sm:pb-5 rounded-b-[28px] sm:rounded-b-[32px] relative z-40 border-b transition-all duration-200 ${
-            isDark 
-              ? 'bg-gradient-to-r from-[#1A1230] via-[#2A1654] to-[#160D2D] text-white border-purple-900/50 shadow-xl shadow-purple-950/40' 
-              : 'bg-gradient-to-r from-[#5B1EB7] via-[#6D28D9] to-[#4C1D95] text-white border-purple-400/20 shadow-xl shadow-purple-900/25'
-          }`}>
-            <div className="flex items-center justify-between gap-2.5 sm:gap-3">
-              {/* Home Page: User Avatar + Greeting | Inner Pages: Back Button + Page Title */}
+          <header 
+            style={{ paddingTop: 'max(env(safe-area-inset-top, 0px) + 0.5rem, 2.75rem)' }}
+            className={`px-4 sm:px-5 pb-4 sm:pb-5 rounded-b-[30px] sm:rounded-b-[34px] relative z-40 border-b transition-all duration-200 overflow-hidden ${
+              isDark 
+                ? 'bg-gradient-to-r from-[#1A1230] via-[#2A1654] to-[#160D2D] text-white border-purple-900/50 shadow-xl shadow-purple-950/40' 
+                : 'bg-gradient-to-r from-[#5B1EB7] via-[#6D28D9] to-[#4C1D95] text-white border-purple-400/20 shadow-xl shadow-purple-900/25'
+            }`}
+          >
+            {/* Top Status Bar Ambient Shadow Line (Creates clean separation from system clock/battery) */}
+            <div className="absolute top-0 inset-x-0 h-6 bg-gradient-to-b from-black/25 via-black/10 to-transparent pointer-events-none" />
+
+            <div className="relative z-10 flex items-center justify-between gap-2.5 sm:gap-3">
+              {/* Home Page: Unified VIP Account & Profile Capsule | Inner Pages: Back Button + Title */}
               {location.pathname === '/' || !title ? (
                 <div 
                   onClick={() => navigate('/profile')}
-                  className="flex items-center gap-2.5 sm:gap-3 min-w-0 flex-1 cursor-pointer active:scale-95 transition-transform group shrink-0"
-                  title="View Profile"
+                  className="flex items-center gap-2 sm:gap-2.5 min-w-0 flex-1 cursor-pointer active:scale-95 transition-all group bg-white/15 hover:bg-white/20 border border-white/20 backdrop-blur-md rounded-2xl py-1.5 px-2.5 sm:px-3 shadow-sm max-w-[220px]"
+                  title="My VIP Profile & Account"
                 >
-                  <UserAvatar 
-                    user={user}
-                    size="md" 
-                    showOnlineDot={true} 
-                  />
-                  <div className="min-w-0 flex-1">
-                    <span className="text-[10px] font-bold text-purple-200/90 uppercase tracking-wider block leading-none">
-                      Welcome back
+                  {/* Luxury Unified Avatar with Gradient Ring & Live Pulse */}
+                  <div className="relative shrink-0">
+                    <div className="w-9 h-9 sm:w-10 sm:h-10 rounded-xl bg-gradient-to-tr from-amber-400 via-purple-500 to-indigo-600 p-[1.5px] shadow-sm">
+                      <div className="w-full h-full rounded-[9px] bg-gradient-to-br from-[#2E0854] via-[#5B1EB7] to-[#1E0836] flex items-center justify-center font-black text-amber-200 text-sm sm:text-base relative overflow-hidden">
+                        <div className="absolute inset-0 bg-gradient-to-b from-white/30 via-transparent to-transparent pointer-events-none" />
+                        {user.role === 'ADMIN' ? (
+                          <Crown className="w-4.5 h-4.5 text-amber-300 drop-shadow" />
+                        ) : (
+                          <span className="font-black drop-shadow tracking-tight">
+                            {userInitials}
+                          </span>
+                        )}
+                      </div>
+                    </div>
+                    {/* Live Online Pulse Beacon */}
+                    <span className="absolute -bottom-0.5 -right-0.5 flex h-2.5 w-2.5">
+                      <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
+                      <span className="relative inline-flex rounded-full h-2.5 w-2.5 bg-emerald-400 border-[1.5px] border-[#5B1EB7]"></span>
                     </span>
-                    <h2 className="text-sm sm:text-base font-black text-white tracking-tight leading-tight mt-1 truncate">
-                      {displayName}
-                    </h2>
+                  </div>
+
+                  {/* Account Identity Details */}
+                  <div className="min-w-0 flex-1">
+                    <div className="flex items-center gap-1 leading-none">
+                      <span className="text-[9px] sm:text-[10px] font-black text-amber-300 uppercase tracking-wider flex items-center gap-0.5">
+                        <Sparkles className="w-2.5 h-2.5 shrink-0" />
+                        <span className="truncate">{user.role === 'ADMIN' ? 'Super Admin' : 'VIP Account'}</span>
+                      </span>
+                    </div>
+                    <div className="flex items-center gap-1 mt-0.5">
+                      <h2 className="text-xs sm:text-sm font-black text-white tracking-tight leading-tight truncate">
+                        {displayName}
+                      </h2>
+                      <ChevronRight className="w-3.5 h-3.5 text-purple-200/80 group-hover:translate-x-0.5 transition-transform shrink-0" />
+                    </div>
                   </div>
                 </div>
               ) : (
@@ -97,18 +126,9 @@ export const AppShell = ({ children, hideHeader = false, hideBottomNav = false, 
                 </div>
               )}
 
-              {/* Action Buttons: Account (User), Token (Coins), Support (Headphones), Notifications (Bell) */}
+              {/* Action Buttons: Token Shortcut (PDF §1.2), Support Popup (PDF §2.19), Bell Notification */}
               <div className="flex items-center gap-1.5 sm:gap-2 shrink-0">
-                {/* 1. Account / Profile Button (Requested User Icon) */}
-                <button
-                  onClick={() => navigate('/profile')}
-                  className="w-9 h-9 sm:w-10 sm:h-10 rounded-2xl bg-white/15 backdrop-blur-md border border-white/20 flex items-center justify-center text-white shadow-md active:scale-95 transition-all hover:bg-white/25"
-                  title="My Account"
-                >
-                  <User className="w-4.5 h-4.5 stroke-[2.3]" />
-                </button>
-
-                {/* 2. Token Quick Hub Shortcut (PDF §1.2) */}
+                {/* 1. Token Quick Hub Shortcut (PDF §1.2) */}
                 <button
                   onClick={() => navigate('/token')}
                   className="w-9 h-9 sm:w-10 sm:h-10 rounded-2xl bg-gradient-to-tr from-amber-400 via-yellow-500 to-amber-600 border border-amber-200/40 flex items-center justify-center shadow-md active:scale-95 transition-all hover:brightness-110"
@@ -117,7 +137,7 @@ export const AppShell = ({ children, hideHeader = false, hideBottomNav = false, 
                   <Coins className="w-4.5 h-4.5 sm:w-5 sm:h-5 text-white drop-shadow-xs" />
                 </button>
 
-                {/* 3. 24/7 VIP Support Popup Button (PDF §1.2 & §2.19) */}
+                {/* 2. 24/7 VIP Support Popup Button (PDF §1.2 & §2.19) */}
                 <button
                   onClick={() => setShowSupportModal(true)}
                   className="w-9 h-9 sm:w-10 sm:h-10 rounded-2xl bg-white/15 backdrop-blur-md border border-white/20 flex items-center justify-center shadow-md active:scale-95 transition-all hover:bg-white/25 text-purple-200"
@@ -126,7 +146,7 @@ export const AppShell = ({ children, hideHeader = false, hideBottomNav = false, 
                   <Headphones className="w-4 h-4 sm:w-4.5 sm:h-4.5" />
                 </button>
 
-                {/* 4. Notification Bell with Badge */}
+                {/* 3. Notification Bell with Badge */}
                 <button 
                   onClick={() => navigate('/notifications')}
                   className="w-9 h-9 sm:w-10 sm:h-10 rounded-2xl bg-white/15 backdrop-blur-md border border-white/20 flex items-center justify-center shadow-md relative active:scale-95 transition-all hover:bg-white/25 text-amber-300 fill-amber-300"

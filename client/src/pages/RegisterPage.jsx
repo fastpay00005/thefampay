@@ -3,7 +3,7 @@ import { useNavigate, useSearchParams, Link } from 'react-router-dom';
 import { useApp } from '../context/AppContext';
 import { authService } from '../services/authService';
 import { signInWithGoogle } from '../services/supabaseClient';
-import { User, Mail, Smartphone, Lock, Gift, ArrowRight, Loader2, ShieldCheck, Sparkles } from 'lucide-react';
+import { User, Mail, Smartphone, Lock, Gift, ArrowRight, Loader2, ShieldCheck, Sparkles, Zap } from 'lucide-react';
 
 const GoogleIcon = () => (
   <svg className="w-4 h-4 shrink-0" viewBox="0 0 24 24">
@@ -110,29 +110,46 @@ export const RegisterPage = () => {
       {/* Centered Mobile Device Frame (Edge-to-edge on mobile, sleek frame on desktop) */}
       <div className="w-full sm:max-w-[430px] min-h-screen sm:min-h-0 sm:max-h-[95vh] bg-[#FAF9FE] flex flex-col justify-between relative sm:rounded-[36px] sm:shadow-[0_25px_60px_-15px_rgba(0,0,0,0.7),0_0_0_12px_#1E1638] sm:border-2 sm:border-purple-500/20 overflow-y-auto no-scrollbar">
         
-        {/* Top Hero Branded Header (Separated from top edge with rounded corners) */}
-        <div className="pt-3.5 sm:pt-4 px-3 sm:px-4 shrink-0">
-          <div className="relative bg-gradient-to-br from-[#5B1EB7] via-[#6D28D9] to-[#3B0764] text-white pt-5 pb-4 px-5 rounded-[28px] sm:rounded-[32px] shadow-lg shadow-purple-950/20 overflow-hidden border border-purple-400/20">
-            {/* Ambient Lighting Orbs */}
-            <div className="absolute -top-10 -right-10 w-36 h-36 bg-purple-400/20 rounded-full blur-2xl pointer-events-none" />
-            <div className="absolute -bottom-10 -left-10 w-32 h-32 bg-indigo-500/20 rounded-full blur-xl pointer-events-none" />
+        {/* Top Hero Branded Header - Full Bleed Seamless Curved Luxury Design */}
+        <div className="relative bg-gradient-to-br from-[#4C1D95] via-[#6D28D9] to-[#2E0854] text-white pt-10 sm:pt-12 pb-7 px-6 rounded-b-[36px] sm:rounded-b-[40px] shadow-xl shadow-purple-950/30 overflow-hidden border-b border-purple-400/25 shrink-0">
+          {/* Ambient Lighting Orbs */}
+          <div className="absolute -top-12 -right-12 w-40 h-40 bg-purple-400/25 rounded-full blur-2xl pointer-events-none" />
+          <div className="absolute -bottom-12 -left-12 w-36 h-36 bg-amber-400/15 rounded-full blur-xl pointer-events-none" />
 
-            <div className="relative z-10 flex flex-col items-center text-center">
-              {/* The FamPay Official Logo Icon */}
-              <img 
-                src="/favicon.svg" 
-                onError={(e) => { e.currentTarget.src = '/apple-touch-icon.png'; }}
-                alt="The FamPay Logo" 
-                style={{ width: '44px', height: '44px', maxWidth: '44px', maxHeight: '44px' }}
-                className="w-11 h-11 max-w-[44px] max-h-[44px] rounded-2xl shadow-hero mb-1.5 object-contain border border-white/20 p-0.5 bg-purple-900/40 shrink-0" 
-              />
-              <h1 className="text-lg sm:text-xl font-black text-white tracking-tight leading-tight">
-                Create Account
-              </h1>
-              <p className="text-[11px] text-purple-200/90 font-medium mt-0.5 flex items-center gap-1">
-                <Sparkles className="w-3 h-3 text-amber-300" />
-                <span>Join The FamPay Network in 30 Seconds</span>
-              </p>
+          <div className="relative z-10 flex flex-col items-center text-center">
+            {/* 3D Animated Floating Brand Emblem */}
+            <div className="relative mb-2.5 flex items-center justify-center">
+              {/* Soft Ambient Pulsing Aura */}
+              <div className="absolute w-20 h-20 bg-amber-400/20 rounded-full blur-xl animate-pulse pointer-events-none" />
+              
+              <div className="relative w-14 h-14 rounded-2xl bg-gradient-to-tr from-amber-400 via-amber-300 to-yellow-500 p-0.5 shadow-[0_10px_25px_rgba(245,158,11,0.4)] border border-amber-200/50 hover:scale-105 transition-transform duration-300 flex items-center justify-center">
+                <div className="w-full h-full rounded-[14px] bg-gradient-to-br from-purple-950 via-[#5B1EB7] to-[#2E0854] flex items-center justify-center relative overflow-hidden">
+                  {/* Specular Diagonal Reflection */}
+                  <div className="absolute inset-0 bg-gradient-to-tr from-white/35 via-transparent to-transparent pointer-events-none" />
+                  {/* Animated Golden Lightning Bolt */}
+                  <Zap className="w-7 h-7 text-amber-300 fill-amber-400 drop-shadow-[0_2px_10px_rgba(251,191,36,0.9)] animate-pulse" />
+                </div>
+
+                {/* Floating Sparkle Pin */}
+                <div className="absolute -top-1.5 -right-1.5 w-5 h-5 rounded-full bg-amber-400 border-2 border-purple-900 flex items-center justify-center shadow-md">
+                  <Sparkles className="w-3 h-3 text-purple-950 animate-spin" />
+                </div>
+              </div>
+            </div>
+
+            <h1 className="text-2xl sm:text-3xl font-black text-white tracking-tight leading-tight">
+              Create VIP Account
+            </h1>
+            
+            {/* Live Platform Status Pill */}
+            <div className="mt-2 inline-flex items-center gap-2 bg-white/10 backdrop-blur-md border border-white/20 px-3.5 py-1 rounded-full shadow-inner">
+              <span className="relative flex h-2 w-2">
+                <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
+                <span className="relative inline-flex rounded-full h-2 w-2 bg-emerald-400"></span>
+              </span>
+              <span className="text-[11px] font-bold text-purple-100 tracking-wide">
+                Join {appName} • Instant 2% Bonus
+              </span>
             </div>
           </div>
         </div>
