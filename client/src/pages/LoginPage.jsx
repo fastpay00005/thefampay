@@ -79,28 +79,30 @@ export const LoginPage = () => {
       {/* Centered Mobile Device Frame (Edge-to-edge on mobile, sleek frame on desktop) */}
       <div className="w-full sm:max-w-[430px] min-h-screen sm:min-h-0 sm:max-h-[92vh] bg-[#FAF9FE] flex flex-col justify-between relative sm:rounded-[36px] sm:shadow-[0_25px_60px_-15px_rgba(0,0,0,0.7),0_0_0_12px_#1E1638] sm:border-2 sm:border-purple-500/20 overflow-y-auto no-scrollbar">
         
-        {/* Top Hero Branded Header */}
-        <div className="relative bg-gradient-to-br from-[#5B1EB7] via-[#6D28D9] to-[#3B0764] text-white pt-7 pb-5 px-5 rounded-b-[28px] sm:rounded-b-[32px] shadow-lg shadow-purple-950/20 overflow-hidden shrink-0">
-          {/* Ambient Lighting Orbs */}
-          <div className="absolute -top-10 -right-10 w-36 h-36 bg-purple-400/20 rounded-full blur-2xl pointer-events-none" />
-          <div className="absolute -bottom-10 -left-10 w-32 h-32 bg-indigo-500/20 rounded-full blur-xl pointer-events-none" />
+        {/* Top Hero Branded Header (Separated from top edge with rounded corners) */}
+        <div className="pt-3.5 sm:pt-4 px-3 sm:px-4 shrink-0">
+          <div className="relative bg-gradient-to-br from-[#5B1EB7] via-[#6D28D9] to-[#3B0764] text-white pt-6 pb-5 px-5 rounded-[28px] sm:rounded-[32px] shadow-lg shadow-purple-950/20 overflow-hidden border border-purple-400/20">
+            {/* Ambient Lighting Orbs */}
+            <div className="absolute -top-10 -right-10 w-36 h-36 bg-purple-400/20 rounded-full blur-2xl pointer-events-none" />
+            <div className="absolute -bottom-10 -left-10 w-32 h-32 bg-indigo-500/20 rounded-full blur-xl pointer-events-none" />
 
-          <div className="relative z-10 flex flex-col items-center text-center">
-            {/* The FamPay Official Logo Icon */}
-            <img 
-              src="/favicon.svg" 
-              onError={(e) => { e.currentTarget.src = '/apple-touch-icon.png'; }}
-              alt="The FamPay Logo" 
-              style={{ width: '48px', height: '48px', maxWidth: '48px', maxHeight: '48px' }}
-              className="w-12 h-12 max-w-[48px] max-h-[48px] rounded-2xl shadow-hero mb-2 object-contain border border-white/20 p-0.5 bg-purple-900/40 shrink-0" 
-            />
-            <h1 className="text-xl sm:text-2xl font-black text-white tracking-tight leading-tight">
-              {appName}
-            </h1>
-            <p className="text-xs text-purple-200/90 font-medium mt-0.5 flex items-center gap-1">
-              <Sparkles className="w-3.5 h-3.5 text-amber-300" />
-              <span>Instant Digital Wallet & Token Exchange</span>
-            </p>
+            <div className="relative z-10 flex flex-col items-center text-center">
+              {/* The FamPay Official Logo Icon */}
+              <img 
+                src="/favicon.svg" 
+                onError={(e) => { e.currentTarget.src = '/apple-touch-icon.png'; }}
+                alt="The FamPay Logo" 
+                style={{ width: '46px', height: '46px', maxWidth: '46px', maxHeight: '46px' }}
+                className="w-11 h-11 max-w-[46px] max-h-[46px] rounded-2xl shadow-hero mb-2 object-contain border border-white/20 p-0.5 bg-purple-900/40 shrink-0" 
+              />
+              <h1 className="text-xl sm:text-2xl font-black text-white tracking-tight leading-tight">
+                {appName}
+              </h1>
+              <p className="text-xs text-purple-200/90 font-medium mt-0.5 flex items-center gap-1">
+                <Sparkles className="w-3.5 h-3.5 text-amber-300" />
+                <span>Instant Digital Wallet & Token Exchange</span>
+              </p>
+            </div>
           </div>
         </div>
 
