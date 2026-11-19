@@ -7,7 +7,7 @@ import {
   ArrowDownLeft, ArrowUpRight, Bell, FileText, 
   Settings, ChevronLeft, ChevronRight, LogOut, 
   Zap, RefreshCw, Menu, X, Shield, CheckCircle2,
-  ChevronDown, Layers, CreditCard, ShieldCheck, Image, AlertTriangle
+  ChevronDown, Layers, CreditCard, ShieldCheck, Image, AlertTriangle, RotateCw
 } from 'lucide-react';
 
 export const AdminLayout = ({ children }) => {
@@ -86,6 +86,7 @@ export const AdminLayout = ({ children }) => {
     if (path === '/admin/channels') return { title: 'Payment Gateways', desc: 'Manage Bank, UPI QR & Digital receiving accounts' };
     if (path === '/admin/tasks') return { title: 'Verification Tasks', desc: 'Create tasks & audit user proof submissions' };
     if (path === '/admin/banners') return { title: 'Announcement Banners', desc: 'Manage home announcement and promo popup modals' };
+    if (path === '/admin/spin') return { title: 'Lucky Spin Wheel', desc: 'Price per spin, welcome free spin & prize segment controls' };
     if (path === '/admin/maintenance') return { title: 'Maintenance Mode', desc: 'Configure platform maintenance schedule and messaging' };
     if (path === '/admin/broadcast') return { title: 'Notification Broadcast', desc: 'Send targeted and system-wide announcements' };
     if (path === '/admin/settings') return { title: 'Platform Settings', desc: 'Exchange rates, themes, sell toggles & support links' };
@@ -141,6 +142,7 @@ export const AdminLayout = ({ children }) => {
     {
       title: 'SYSTEM CONTROL',
       items: [
+        { to: '/admin/spin', icon: RotateCw, label: 'Lucky Spin Wheel', isActive: isNavActive('/admin/spin') },
         { to: '/admin/banners', icon: Image, label: 'Announcement Banners', isActive: isNavActive('/admin/banners') },
         { to: '/admin/maintenance', icon: AlertTriangle, label: 'Maintenance Mode', isActive: isNavActive('/admin/maintenance') },
         { to: '/admin/broadcast', icon: Bell, label: 'Broadcast Messages', isActive: isNavActive('/admin/broadcast') },

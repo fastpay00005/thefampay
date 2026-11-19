@@ -54,7 +54,10 @@ import {
   updateBanner,
   deleteBanner,
   getMaintenanceSettings,
-  updateMaintenanceSettings
+  updateMaintenanceSettings,
+  addSpinRecord,
+  getSpinHistory,
+  getSpinStats
 } from './supabaseDb.js';
 import path from 'path';
 import { fileURLToPath } from 'url';
@@ -519,6 +522,23 @@ app.post('/api/auth/login', async (req, res) => {
     return res.status(403).json({ success: false, message: 'This account has been suspended. Please contact customer support.' });
   }
 
+  // Grant 1-time welcome free spin if not yet granted
+  if (!user.welcomeSpinGranted) {
+    try {
+      const appSettings = await getAppSettings();
+      const spinSettings = appSettings?.spin;
+      const freeSpins = spinSettings?.enabled !== false ? Number(spinSettings?.welcomeFreeSpins ?? 1) : 0;
+      user.spinChances = (user.spinChances || 0) + freeSpins;
+      user.welcomeSpinGranted = true;
+      await updateUserRecord(user.id, {
+        spinChances: user.spinChances,
+        welcomeSpinGranted: true
+      });
+    } catch (e) {
+      console.warn('Welcome spin grant error:', e.message);
+    }
+  }
+
   return res.json({
     success: true,
     message: 'Signed in successfully!',
@@ -551,6 +571,22 @@ app.post('/api/auth/google-sync', async (req, res) => {
       if (Object.keys(updates).length > 0) {
         await updateUserRecord(user.id, updates);
         Object.assign(user, updates);
+      }
+
+      if (!user.welcomeSpinGranted) {
+        try {
+          const appSettings = await getAppSettings();
+          const spinSettings = appSettings?.spin;
+          const freeSpins = spinSettings?.enabled !== false ? Number(spinSettings?.welcomeFreeSpins ?? 1) : 0;
+          user.spinChances = (user.spinChances || 0) + freeSpins;
+          user.welcomeSpinGranted = true;
+          await updateUserRecord(user.id, {
+            spinChances: user.spinChances,
+            welcomeSpinGranted: true
+          });
+        } catch (e) {
+          console.warn('Google auth welcome spin grant error:', e.message);
+        }
       }
 
       return res.json({
@@ -1180,64 +1216,357 @@ app.patch('/api/users/telegram', async (req, res) => {
   return res.json({ success: true, message: 'Telegram handle updated successfully!', user: updated });
 });
 
-// Lucky Spin Wheel Execution
-app.post('/api/user/spin', async (req, res) => {
-  const { userId } = req.body;
-  const user = await findUserById(userId);
+// ==========================================
+// LUCKY SPIN WHEEL SYSTEM (FULL ADMIN CONTROL)
+// ==========================================
 
-  if (!user) return res.status(404).json({ success: false, message: 'User not found' });
-  if (user.status === 'blocked') {
-    return res.status(403).json({ success: false, message: 'Your account is blocked by Admin.' });
-  }
-  if (user.accountPaused) {
-    return res.status(403).json({ success: false, message: 'Your account is temporarily paused by Admin.' });
-  }
-  if (!user.spinChances || user.spinChances <= 0) {
-    return res.status(400).json({
-      success: false,
-      message: 'No spin chances available! Complete ₹10,000 or $100 trade volume to earn a spin.'
+const DEFAULT_SPIN_PRIZES = [
+  { id: 'p1', label: '₹10 Cash', value: 10, type: 'cash', color: '#7C3AED', textColor: '#FFFFFF', weight: 28 },
+  { id: 'p2', label: '₹25 Cash', value: 25, type: 'cash', color: '#EC4899', textColor: '#FFFFFF', weight: 24 },
+  { id: 'p3', label: '₹50 Cash', value: 50, type: 'cash', color: '#10B981', textColor: '#FFFFFF', weight: 18 },
+  { id: 'p4', label: '₹100 Cash', value: 100, type: 'cash', color: '#F59E0B', textColor: '#FFFFFF', weight: 12 },
+  { id: 'p5', label: 'Better Luck', value: 0, type: 'empty', color: '#64748B', textColor: '#FFFFFF', weight: 10 },
+  { id: 'p6', label: '₹200 Cash', value: 200, type: 'cash', color: '#06B6D4', textColor: '#FFFFFF', weight: 5 },
+  { id: 'p7', label: '₹500 Jackpot', value: 500, type: 'cash', color: '#EF4444', textColor: '#FFFFFF', weight: 2 },
+  { id: 'p8', label: '₹5 Bonus', value: 5, type: 'cash', color: '#8B5CF6', textColor: '#FFFFFF', weight: 1 }
+];
+
+// 1. Get Public Wheel Configuration (Wheel Segments & Spin Buy Price)
+app.get('/api/user/spin/config', async (req, res) => {
+  try {
+    const settings = await getAppSettings();
+    const spinSettings = settings?.spin || {};
+    const enabled = spinSettings.enabled !== false;
+    const spinPrice = Number(spinSettings.spinPrice) > 0 ? Number(spinSettings.spinPrice) : 50;
+    const welcomeFreeSpins = spinSettings.welcomeFreeSpins !== undefined ? Number(spinSettings.welcomeFreeSpins) : 1;
+    const prizes = (Array.isArray(spinSettings.prizes) && spinSettings.prizes.length >= 2)
+      ? spinSettings.prizes
+      : DEFAULT_SPIN_PRIZES;
+
+    // Public segment info (strip private odds/weight)
+    const sanitizedPrizes = prizes.map((p, idx) => ({
+      id: p.id || `p_${idx}`,
+      label: p.label || `Prize ${idx + 1}`,
+      value: Number(p.value) || 0,
+      type: p.type || (Number(p.value) > 0 ? 'cash' : 'empty'),
+      color: p.color || '#7C3AED',
+      textColor: p.textColor || '#FFFFFF'
+    }));
+
+    return res.json({
+      success: true,
+      enabled,
+      spinPrice,
+      welcomeFreeSpins,
+      minTradingVolumeForSpin: Number(spinSettings.minTradingVolumeForSpin) || 10000,
+      prizes: sanitizedPrizes
     });
+  } catch (err) {
+    return res.status(500).json({ success: false, message: err.message });
   }
+});
 
-  // Pre-configured spin wheel reward segments
-  const rewards = [50, 100, 200, 500, 1000, 50, 250, 100];
-  const wonAmount = rewards[Math.floor(Math.random() * rewards.length)];
+// 2. Buy Spins Using Wallet Balance (₹50 / spin)
+app.post('/api/user/spin/buy', async (req, res) => {
+  try {
+    const { userId, count = 1 } = req.body;
+    const user = await findUserById(userId);
 
-  const updatedChances = user.spinChances - 1;
-  const updatedInr = user.inrBalance + wonAmount;
+    if (!user) return res.status(404).json({ success: false, message: 'User account not found' });
+    if (user.status === 'blocked') {
+      return res.status(403).json({ success: false, message: 'Your account is suspended by Admin.' });
+    }
+    if (user.accountPaused) {
+      return res.status(403).json({ success: false, message: 'Your account is temporarily paused by Admin.' });
+    }
 
-  await updateUserRecord(user.id, {
-    spinChances: updatedChances,
-    inrBalance: updatedInr
-  });
+    const settings = await getAppSettings();
+    const spinSettings = settings?.spin || {};
+    if (spinSettings.enabled === false) {
+      return res.status(400).json({ success: false, message: 'Lucky Spin Wheel is temporarily unavailable.' });
+    }
 
-  await addTransaction({
-    userId: user.id,
-    userName: user.fullName,
-    userEmail: user.email,
-    type: 'SPIN_WIN',
-    amount: wonAmount,
-    currency: 'INR',
-    method: 'INTERNAL',
-    status: 'COMPLETED',
-    refNumber: `SPIN-${Date.now()}`,
-    channelLabel: 'Lucky Spin Wheel Reward'
-  });
+    const spinPrice = Number(spinSettings.spinPrice) > 0 ? Number(spinSettings.spinPrice) : 50;
+    const buyCount = Math.max(1, parseInt(count, 10) || 1);
+    const totalCost = buyCount * spinPrice;
 
-  await addNotification({
-    targetType: 'SPECIFIC',
-    targetUserId: user.id,
-    title: '🎡 Lucky Spin Win!',
-    message: `Congratulations! You won ₹${wonAmount} added directly to your wallet!`
-  });
+    if (Number(user.inrBalance || 0) < totalCost) {
+      return res.status(400).json({
+        success: false,
+        message: `Insufficient wallet balance! ₹${totalCost.toLocaleString('en-IN')} required to buy ${buyCount} spin(s). Current balance: ₹${Number(user.inrBalance || 0).toLocaleString('en-IN')}`,
+        requiredAmount: totalCost,
+        currentBalance: Number(user.inrBalance || 0)
+      });
+    }
 
-  return res.json({
-    success: true,
-    wonAmount,
-    newBalance: updatedInr,
-    remainingSpins: updatedChances,
-    message: `Congratulations! You won ₹${wonAmount} added directly to your wallet!`
-  });
+    const newBalance = Number(user.inrBalance || 0) - totalCost;
+    const newSpinChances = Number(user.spinChances || 0) + buyCount;
+
+    await updateUserRecord(user.id, {
+      inrBalance: newBalance,
+      spinChances: newSpinChances
+    });
+
+    // Record internal purchase transaction
+    await addTransaction({
+      userId: user.id,
+      userName: user.fullName,
+      userEmail: user.email,
+      type: 'SPIN_BUY',
+      amount: totalCost,
+      currency: 'INR',
+      method: 'INTERNAL',
+      status: 'COMPLETED',
+      refNumber: `SPINBUY-${Date.now()}`,
+      channelLabel: `Purchased ${buyCount} Lucky Spin(s) @ ₹${spinPrice} each`
+    });
+
+    // Notification
+    await addNotification({
+      targetType: 'SPECIFIC',
+      targetUserId: user.id,
+      title: '🎡 Spins Purchased!',
+      message: `You successfully bought ${buyCount} Spin chances for ₹${totalCost}. Go spin the wheel now!`
+    });
+
+    return res.json({
+      success: true,
+      message: `🎉 Successfully purchased ${buyCount} spin(s) for ₹${totalCost}!`,
+      spinChances: newSpinChances,
+      newBalance,
+      purchasedCount: buyCount
+    });
+  } catch (err) {
+    return res.status(500).json({ success: false, message: err.message });
+  }
+});
+
+// 3. Play Lucky Spin (Verified Server-Side Odds & Deterministic Result)
+app.post('/api/user/spin', async (req, res) => {
+  try {
+    const { userId } = req.body;
+    const user = await findUserById(userId);
+
+    if (!user) return res.status(404).json({ success: false, message: 'User not found' });
+    if (user.status === 'blocked') {
+      return res.status(403).json({ success: false, message: 'Your account is blocked by Admin.' });
+    }
+    if (user.accountPaused) {
+      return res.status(403).json({ success: false, message: 'Your account is temporarily paused by Admin.' });
+    }
+
+    const settings = await getAppSettings();
+    const spinSettings = settings?.spin || {};
+    if (spinSettings.enabled === false) {
+      return res.status(400).json({ success: false, message: 'Lucky Spin Wheel is currently disabled by Admin.' });
+    }
+
+    const currentChances = Number(user.spinChances || 0);
+    const spinPrice = Number(spinSettings.spinPrice) > 0 ? Number(spinSettings.spinPrice) : 50;
+
+    if (currentChances <= 0) {
+      return res.status(400).json({
+        success: false,
+        noChances: true,
+        message: `No spin chances remaining! Buy a spin for ₹${spinPrice} to play.`
+      });
+    }
+
+    const prizes = (Array.isArray(spinSettings.prizes) && spinSettings.prizes.length >= 2)
+      ? spinSettings.prizes
+      : DEFAULT_SPIN_PRIZES;
+
+    // Weighted Random Selection (Guarantees Admin configured probabilities)
+    const totalWeight = prizes.reduce((sum, p) => sum + (Number(p.weight) > 0 ? Number(p.weight) : 1), 0);
+    let randomVal = Math.random() * totalWeight;
+    let winningIndex = 0;
+
+    for (let i = 0; i < prizes.length; i++) {
+      const weight = Number(prizes[i].weight) > 0 ? Number(prizes[i].weight) : 1;
+      if (randomVal < weight) {
+        winningIndex = i;
+        break;
+      }
+      randomVal -= weight;
+    }
+
+    const wonPrize = prizes[winningIndex];
+    const wonAmount = Number(wonPrize.value) || 0;
+    const updatedChances = currentChances - 1;
+    const updatedInr = Number(user.inrBalance || 0) + wonAmount;
+
+    await updateUserRecord(user.id, {
+      spinChances: updatedChances,
+      inrBalance: updatedInr
+    });
+
+    // Record Spin History Log
+    await addSpinRecord({
+      userId: user.id,
+      userName: user.fullName,
+      userEmail: user.email,
+      prizeLabel: wonPrize.label,
+      prizeValue: wonAmount,
+      prizeType: wonPrize.type || (wonAmount > 0 ? 'cash' : 'empty')
+    });
+
+    if (wonAmount > 0) {
+      await addTransaction({
+        userId: user.id,
+        userName: user.fullName,
+        userEmail: user.email,
+        type: 'SPIN_WIN',
+        amount: wonAmount,
+        currency: 'INR',
+        method: 'INTERNAL',
+        status: 'COMPLETED',
+        refNumber: `SPIN-${Date.now()}`,
+        channelLabel: `Lucky Spin Reward: ${wonPrize.label}`
+      });
+
+      await addNotification({
+        targetType: 'SPECIFIC',
+        targetUserId: user.id,
+        title: '🎡 Lucky Spin Win!',
+        message: `Congratulations! You won ₹${wonAmount} from Lucky Spin! Added directly to your wallet.`
+      });
+    }
+
+    return res.json({
+      success: true,
+      winningIndex,
+      wonPrize: {
+        id: wonPrize.id,
+        label: wonPrize.label,
+        value: wonAmount,
+        type: wonPrize.type || (wonAmount > 0 ? 'cash' : 'empty'),
+        color: wonPrize.color
+      },
+      wonAmount,
+      newBalance: updatedInr,
+      remainingSpins: updatedChances,
+      message: wonAmount > 0
+        ? `🎉 Awesome! You won ${wonPrize.label} in cash reward!`
+        : 'Better luck next time! Spin again to win big cash prizes.'
+    });
+  } catch (err) {
+    return res.status(500).json({ success: false, message: err.message });
+  }
+});
+
+// 4. Get User's Personal Spin History
+app.get('/api/user/spin/history/:userId', async (req, res) => {
+  try {
+    const history = await getSpinHistory(req.params.userId, 20);
+    return res.json({ success: true, history });
+  } catch (err) {
+    return res.status(500).json({ success: false, message: err.message });
+  }
+});
+
+// 5. Admin: Get Spin Wheel Settings (With Full Prize Weights)
+app.get('/api/admin/spin/settings', async (req, res) => {
+  try {
+    const settings = await getAppSettings();
+    const spinSettings = settings?.spin || {};
+    const prizes = (Array.isArray(spinSettings.prizes) && spinSettings.prizes.length >= 2)
+      ? spinSettings.prizes
+      : DEFAULT_SPIN_PRIZES;
+
+    return res.json({
+      success: true,
+      settings: {
+        enabled: spinSettings.enabled !== false,
+        spinPrice: Number(spinSettings.spinPrice) > 0 ? Number(spinSettings.spinPrice) : 50,
+        welcomeFreeSpins: spinSettings.welcomeFreeSpins !== undefined ? Number(spinSettings.welcomeFreeSpins) : 1,
+        minTradingVolumeForSpin: Number(spinSettings.minTradingVolumeForSpin) || 10000,
+        prizes
+      }
+    });
+  } catch (err) {
+    return res.status(500).json({ success: false, message: err.message });
+  }
+});
+
+// 6. Admin: Update Spin Wheel Settings (Prizes, Price, Free Spins, etc.)
+app.put('/api/admin/spin/settings', async (req, res) => {
+  try {
+    const { enabled, spinPrice, welcomeFreeSpins, minTradingVolumeForSpin, prizes } = req.body;
+
+    if (prizes !== undefined) {
+      if (!Array.isArray(prizes) || prizes.length < 2) {
+        return res.status(400).json({ success: false, message: 'At least 2 prize segments are required for the wheel.' });
+      }
+    }
+
+    const cleanPrizes = prizes ? prizes.map((p, idx) => ({
+      id: p.id || `p_${Date.now()}_${idx}`,
+      label: (p.label || `Prize ${idx + 1}`).trim(),
+      value: Math.max(0, Number(p.value) || 0),
+      type: p.type || (Number(p.value) > 0 ? 'cash' : 'empty'),
+      color: p.color || '#7C3AED',
+      textColor: p.textColor || '#FFFFFF',
+      weight: Math.max(1, Number(p.weight) || 10)
+    })) : undefined;
+
+    const current = (await getAppSettings())?.spin || {};
+    const updated = {
+      ...current,
+      ...(enabled !== undefined && { enabled: Boolean(enabled) }),
+      ...(spinPrice !== undefined && { spinPrice: Math.max(1, Number(spinPrice) || 50) }),
+      ...(welcomeFreeSpins !== undefined && { welcomeFreeSpins: Math.max(0, Number(welcomeFreeSpins) || 0) }),
+      ...(minTradingVolumeForSpin !== undefined && { minTradingVolumeForSpin: Math.max(0, Number(minTradingVolumeForSpin) || 10000) }),
+      ...(cleanPrizes !== undefined && { prizes: cleanPrizes })
+    };
+
+    await updateAppSetting('spin', updated);
+    return res.json({ success: true, message: 'Lucky Spin configuration saved successfully!', settings: updated });
+  } catch (err) {
+    return res.status(500).json({ success: false, message: err.message });
+  }
+});
+
+// 7. Admin: Get Spin Wheel Statistics & Analytics
+app.get('/api/admin/spin/stats', async (req, res) => {
+  try {
+    const stats = await getSpinStats();
+    return res.json({ success: true, stats });
+  } catch (err) {
+    return res.status(500).json({ success: false, message: err.message });
+  }
+});
+
+// 8. Admin: Manually Gift / Adjust User Spin Chances
+app.post('/api/admin/spin/gift', async (req, res) => {
+  try {
+    const { userId, chances = 1, note = 'Special Admin Reward' } = req.body;
+    const user = await findUserById(userId);
+
+    if (!user) return res.status(404).json({ success: false, message: 'User not found' });
+
+    const giftCount = parseInt(chances, 10);
+    if (isNaN(giftCount)) return res.status(400).json({ success: false, message: 'Invalid chances count' });
+
+    const newChances = Math.max(0, (user.spinChances || 0) + giftCount);
+    await updateUserRecord(user.id, { spinChances: newChances });
+
+    if (giftCount > 0) {
+      await addNotification({
+        targetType: 'SPECIFIC',
+        targetUserId: user.id,
+        title: '🎉 Complimentary Lucky Spins!',
+        message: `Admin has gifted you ${giftCount} Lucky Spin chance(s)! ${note}`
+      });
+    }
+
+    return res.json({
+      success: true,
+      message: `Updated user spins! New balance: ${newChances} chances.`,
+      spinChances: newChances
+    });
+  } catch (err) {
+    return res.status(500).json({ success: false, message: err.message });
+  }
 });
 
 // Submit Task Verification Proof

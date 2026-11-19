@@ -174,14 +174,28 @@ let dbState = {
       email: 'fastpay00005@gmail.com'
     },
     spin: {
+      enabled: true,
+      spinPrice: 50,
+      welcomeFreeSpins: 1,
       minTradingVolumeForSpin: 10000,
-      usdtVolumeForSpin: 100
+      usdtVolumeForSpin: 100,
+      prizes: [
+        { id: 'p1', label: '₹10 Cash', value: 10, type: 'cash', color: '#7C3AED', textColor: '#FFFFFF', weight: 28 },
+        { id: 'p2', label: '₹25 Cash', value: 25, type: 'cash', color: '#EC4899', textColor: '#FFFFFF', weight: 24 },
+        { id: 'p3', label: '₹50 Cash', value: 50, type: 'cash', color: '#10B981', textColor: '#FFFFFF', weight: 18 },
+        { id: 'p4', label: '₹100 Cash', value: 100, type: 'cash', color: '#F59E0B', textColor: '#FFFFFF', weight: 12 },
+        { id: 'p5', label: 'Better Luck', value: 0, type: 'empty', color: '#64748B', textColor: '#FFFFFF', weight: 10 },
+        { id: 'p6', label: '₹200 Cash', value: 200, type: 'cash', color: '#06B6D4', textColor: '#FFFFFF', weight: 5 },
+        { id: 'p7', label: '₹500 Jackpot', value: 500, type: 'cash', color: '#EF4444', textColor: '#FFFFFF', weight: 2 },
+        { id: 'p8', label: '₹5 Bonus', value: 5, type: 'cash', color: '#8B5CF6', textColor: '#FFFFFF', weight: 1 },
+      ]
     }
   },
   notifications: [],
   upiAccounts: [],
   sellRequests: [],
   depositOrders: [],
+  spinHistory: [],
   banners: [
     {
       id: 'BANNER-01',
@@ -402,6 +416,7 @@ export async function getAllUsers() {
           tokenBalance: Number(u.token_balance || fallbackUser.tokenBalance || 0),
           tradingVolume: Number(u.trading_volume || 0),
           spinChances: u.spin_chances || 0,
+          welcomeSpinGranted: Boolean(u.welcome_spin_granted || fallbackUser.welcomeSpinGranted),
           fundLocked: Boolean(u.fund_locked),
           sellAllowed: u.sell_allowed !== false,
           accountPaused: isPaused,
@@ -490,7 +505,8 @@ export async function createNewUser(userData) {
     usdtBalance: userData.usdtBalance ?? 0,
     tokenBalance: 0,
     tradingVolume: 0,
-    spinChances: 0,
+    spinChances: userData.spinChances !== undefined ? userData.spinChances : (dbState.settings?.spin?.enabled !== false ? (dbState.settings?.spin?.welcomeFreeSpins ?? 1) : 0),
+    welcomeSpinGranted: true,
     fundLocked: false,
     sellAllowed: true,
     depositAllowed: true,
@@ -521,6 +537,7 @@ export async function createNewUser(userData) {
         token_balance: newUser.tokenBalance || 0,
         trading_volume: newUser.tradingVolume || 0,
         spin_chances: newUser.spinChances || 0,
+        welcome_spin_granted: Boolean(newUser.welcomeSpinGranted),
         fund_locked: Boolean(newUser.fundLocked),
         sell_allowed: newUser.sellAllowed !== false,
         pin_locked: Boolean(newUser.pinLocked),
@@ -600,6 +617,7 @@ export async function updateUserRecord(id, updates) {
       if (updates.tokenBalance !== undefined) sqlUpdates.token_balance = Number(updates.tokenBalance);
       if (updates.tradingVolume !== undefined) sqlUpdates.trading_volume = Number(updates.tradingVolume);
       if (updates.spinChances !== undefined) sqlUpdates.spin_chances = updates.spinChances;
+      if (updates.welcomeSpinGranted !== undefined) sqlUpdates.welcome_spin_granted = Boolean(updates.welcomeSpinGranted);
       if (updates.fundLocked !== undefined) sqlUpdates.fund_locked = Boolean(updates.fundLocked);
       if (updates.sellAllowed !== undefined) sqlUpdates.sell_allowed = Boolean(updates.sellAllowed);
       if (updates.pinLocked !== undefined) sqlUpdates.pin_locked = Boolean(updates.pinLocked);
@@ -2178,6 +2196,95 @@ export async function updateMaintenanceSettings({ isEnabled, message, scheduledE
   dbState.maintenance = updated;
   invalidateCache('maintenance');
   return updated;
+}
+
+// ==========================================
+// 13. SPIN WHEEL ENGINE & HISTORY
+// ==========================================
+export async function addSpinRecord({ userId, userName, userEmail, prizeLabel, prizeValue, prizeType = 'cash' }) {
+  if (!dbState.spinHistory) dbState.spinHistory = [];
+  
+  const record = {
+    id: `SPIN-${Date.now()}-${Math.floor(Math.random() * 1000)}`,
+    userId,
+    userName: userName || 'Trader',
+    userEmail: userEmail || '',
+    prizeLabel: prizeLabel || 'Reward',
+    prizeValue: Number(prizeValue) || 0,
+    prizeType: prizeType || 'cash',
+    createdAt: new Date().toISOString()
+  };
+
+  dbState.spinHistory.unshift(record);
+  if (dbState.spinHistory.length > 500) {
+    dbState.spinHistory = dbState.spinHistory.slice(0, 500);
+  }
+
+  if (sqlTablesAvailable) {
+    try {
+      await supabase.from('spin_history').insert({
+        id: record.id,
+        user_id: record.userId,
+        user_name: record.userName,
+        user_email: record.userEmail,
+        prize_label: record.prizeLabel,
+        prize_value: record.prizeValue,
+        prize_type: record.prizeType,
+        created_at: record.createdAt
+      });
+    } catch {
+      // Table may not yet be migrated in external instance; memory fallback serves properly
+    }
+  }
+
+  return record;
+}
+
+export async function getSpinHistory(userId = null, limit = 50) {
+  if (!dbState.spinHistory) dbState.spinHistory = [];
+
+  if (sqlTablesAvailable) {
+    try {
+      let query = supabase.from('spin_history').select('*').order('created_at', { ascending: false }).limit(limit);
+      if (userId) query = query.eq('user_id', userId);
+      const { data, error } = await query;
+      if (!error && data && data.length > 0) {
+        return data.map(item => ({
+          id: item.id,
+          userId: item.user_id,
+          userName: item.user_name,
+          userEmail: item.user_email,
+          prizeLabel: item.prize_label,
+          prizeValue: Number(item.prize_value || 0),
+          prizeType: item.prize_type || 'cash',
+          createdAt: item.created_at
+        }));
+      }
+    } catch {}
+  }
+
+  if (userId) {
+    return dbState.spinHistory.filter(s => s.userId === userId).slice(0, limit);
+  }
+  return dbState.spinHistory.slice(0, limit);
+}
+
+export async function getSpinStats() {
+  const allTxs = await getAllTransactions();
+  const spinBuyTxs = allTxs.filter(t => t.type === 'SPIN_BUY' && t.status === 'COMPLETED');
+  const spinWinTxs = allTxs.filter(t => t.type === 'SPIN_WIN' && t.status === 'COMPLETED');
+
+  const totalSpinRevenue = spinBuyTxs.reduce((sum, t) => sum + Number(t.amount || 0), 0);
+  const totalPrizesPaid = spinWinTxs.reduce((sum, t) => sum + Number(t.amount || 0), 0);
+  const recentSpins = await getSpinHistory(null, 50);
+
+  return {
+    totalSpinsPlayed: Math.max((dbState.spinHistory?.length || 0), spinWinTxs.length),
+    totalSpinRevenue,
+    totalPrizesPaid,
+    netProfit: totalSpinRevenue - totalPrizesPaid,
+    recentSpins
+  };
 }
 
 

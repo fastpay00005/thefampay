@@ -161,12 +161,28 @@ export const apiService = {
   },
 
   // Lucky Spin
+  async getSpinConfig() {
+    return await safeFetchJson(`${BASE_URL}/user/spin/config`);
+  },
+
+  async buySpins(userId, count = 1) {
+    return await safeFetchJson(`${BASE_URL}/user/spin/buy`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ userId, count }),
+    });
+  },
+
   async executeSpin(userId) {
     return await safeFetchJson(`${BASE_URL}/user/spin`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ userId }),
     });
+  },
+
+  async getUserSpinHistory(userId) {
+    return await safeFetchJson(`${BASE_URL}/user/spin/history/${userId}`);
   },
 
   // Task Submission
@@ -481,6 +497,31 @@ export const apiService = {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(data),
+    });
+  },
+
+  // Admin: Lucky Spin Controls
+  async adminGetSpinSettings() {
+    return await safeFetchJson(`${BASE_URL}/admin/spin/settings`);
+  },
+
+  async adminUpdateSpinSettings(settings) {
+    return await safeFetchJson(`${BASE_URL}/admin/spin/settings`, {
+      method: 'PUT',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(settings),
+    });
+  },
+
+  async adminGetSpinStats() {
+    return await safeFetchJson(`${BASE_URL}/admin/spin/stats`);
+  },
+
+  async adminGiftSpins(userId, chances, note) {
+    return await safeFetchJson(`${BASE_URL}/admin/spin/gift`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ userId, chances, note }),
     });
   },
 };

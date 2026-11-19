@@ -538,18 +538,36 @@ export const AppProvider = ({ children }) => {
   };
 
   // Lucky Spin Wheel -> Supabase API
+  const buyLuckySpins = async (count = 1) => {
+    if (!user?.id) return { success: false, message: 'Please log in' };
+    try {
+      const res = await apiService.buySpins(user.id, count);
+      if (res.success) {
+        showToast(res.message || `Successfully purchased ${count} spin(s)!`, 'success');
+        await refreshUserData();
+        return res;
+      } else {
+        showToast(res.message || 'Failed to buy spins', 'error');
+        return res;
+      }
+    } catch (err) {
+      showToast('Network error while buying spins', 'error');
+      return { success: false, message: err.message };
+    }
+  };
+
   const playLuckySpin = async () => {
+    if (!user?.id) return null;
     if (user.spinChances <= 0) {
-      showToast('No spin chances remaining! Complete ₹10,000 in trading to unlock a spin.', 'info');
+      showToast('No spin chances remaining! Buy a spin to play.', 'info');
       return null;
     }
 
     try {
       const res = await apiService.executeSpin(user.id);
       if (res.success) {
-        showToast(`🎉 Lucky Spin Prize! ₹${res.wonAmount} credited to your wallet!`, 'success');
         await refreshUserData();
-        return res.wonAmount;
+        return res;
       } else {
         showToast(res.message || 'Spin failed', 'error');
         return null;
@@ -1045,6 +1063,7 @@ export const AppProvider = ({ children }) => {
         handleBuyToken,
         handleSellToken,
         playLuckySpin,
+        buyLuckySpins,
         handleDeposit,
         handleWithdraw,
         adminResetPin,

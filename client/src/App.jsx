@@ -41,6 +41,7 @@ import { AdminUpiReviewPage } from './admin/pages/AdminUpiReviewPage';
 import { AdminSellRequestsPage } from './admin/pages/AdminSellRequestsPage';
 import { AdminBannersPage } from './admin/pages/AdminBannersPage';
 import { AdminMaintenancePage } from './admin/pages/AdminMaintenancePage';
+import { AdminSpinPage } from './admin/pages/AdminSpinPage';
 
 import { ToastNotification } from './components/common/ToastNotification';
 import { MaintenanceBarrier } from './components/common/MaintenanceBarrier';
@@ -100,6 +101,7 @@ export default function App() {
               <Route path="/admin/channels" element={<AdminChannelsPage />} />
               <Route path="/admin/tasks" element={<AdminTasksPage />} />
               <Route path="/admin/banners" element={<AdminBannersPage />} />
+              <Route path="/admin/spin" element={<AdminSpinPage />} />
               <Route path="/admin/maintenance" element={<AdminMaintenancePage />} />
               <Route path="/admin/broadcast" element={<AdminBroadcastPage />} />
               <Route path="/admin/settings" element={<AdminSettingsPage />} />

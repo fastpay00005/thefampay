@@ -34,6 +34,7 @@ CREATE TABLE IF NOT EXISTS public.users (
 -- Migration support for existing databases
 ALTER TABLE public.users ADD COLUMN IF NOT EXISTS account_paused BOOLEAN DEFAULT FALSE;
 ALTER TABLE public.users ADD COLUMN IF NOT EXISTS deposit_allowed BOOLEAN DEFAULT TRUE;
+ALTER TABLE public.users ADD COLUMN IF NOT EXISTS welcome_spin_granted BOOLEAN DEFAULT FALSE;
 
 -- 2. Transactions Table
 CREATE TABLE IF NOT EXISTS public.transactions (
@@ -183,6 +184,18 @@ CREATE TABLE IF NOT EXISTS public.maintenance_settings (
   updated_at TIMESTAMPTZ DEFAULT NOW()
 );
 
+-- 13. Spin History Table (Lucky Wheel Spins)
+CREATE TABLE IF NOT EXISTS public.spin_history (
+  id TEXT PRIMARY KEY,
+  user_id TEXT NOT NULL REFERENCES public.users(id) ON DELETE CASCADE,
+  user_name TEXT,
+  user_email TEXT,
+  prize_label TEXT NOT NULL,
+  prize_value NUMERIC NOT NULL DEFAULT 0,
+  prize_type TEXT DEFAULT 'cash',
+  created_at TIMESTAMPTZ DEFAULT NOW()
+);
+
 -- Enable Row Level Security (RLS)
 ALTER TABLE public.users ENABLE ROW LEVEL SECURITY;
 ALTER TABLE public.transactions ENABLE ROW LEVEL SECURITY;
@@ -270,5 +283,5 @@ INSERT INTO public.settings (key, value)
 VALUES
   ('rates', '{"marketRate": 98.50, "appRate": 100.00, "tokenBuyPrice": 100.00, "tokenSellPrice": 98.00, "usdtInrRate": 88.50, "extraBonusPercent": 2, "globalSellEnabled": true}'::jsonb),
   ('support', '{"telegramGroup": "https://t.me/thefampayofficial", "telegramChannel": "https://t.me/thefampaychannel", "whatsapp": "+919876543210", "email": "fastpay00005@gmail.com"}'::jsonb),
-  ('spin', '{"minTradingVolumeForSpin": 10000, "usdtVolumeForSpin": 100}'::jsonb)
+  ('spin', '{"enabled": true, "spinPrice": 50, "welcomeFreeSpins": 1, "minTradingVolumeForSpin": 10000, "usdtVolumeForSpin": 100, "prizes": [{"id": "p1", "label": "₹10 Cash", "value": 10, "type": "cash", "color": "#7C3AED", "textColor": "#FFFFFF", "weight": 28}, {"id": "p2", "label": "₹25 Cash", "value": 25, "type": "cash", "color": "#EC4899", "textColor": "#FFFFFF", "weight": 24}, {"id": "p3", "label": "₹50 Cash", "value": 50, "type": "cash", "color": "#10B981", "textColor": "#FFFFFF", "weight": 18}, {"id": "p4", "label": "₹100 Cash", "value": 100, "type": "cash", "color": "#F59E0B", "textColor": "#FFFFFF", "weight": 12}, {"id": "p5", "label": "Better Luck", "value": 0, "type": "empty", "color": "#64748B", "textColor": "#FFFFFF", "weight": 10}, {"id": "p6", "label": "₹200 Cash", "value": 200, "type": "cash", "color": "#06B6D4", "textColor": "#FFFFFF", "weight": 5}, {"id": "p7", "label": "₹500 Jackpot", "value": 500, "type": "cash", "color": "#EF4444", "textColor": "#FFFFFF", "weight": 2}, {"id": "p8", "label": "₹5 Bonus", "value": 5, "type": "cash", "color": "#8B5CF6", "textColor": "#FFFFFF", "weight": 1}]}'::jsonb)
 ON CONFLICT (key) DO NOTHING;

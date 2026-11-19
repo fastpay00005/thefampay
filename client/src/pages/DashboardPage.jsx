@@ -11,7 +11,7 @@ import { PendingOrderAlert } from '../components/dashboard/PendingOrderAlert';
 import { RecentTransactions } from '../components/dashboard/RecentTransactions';
 import { BannerPopupModal } from '../components/dashboard/BannerPopupModal';
 import { useApp } from '../context/AppContext';
-import { Sparkles, Trophy, ShieldCheck, ArrowRight } from 'lucide-react';
+import { Sparkles, Trophy, ShieldCheck, ArrowRight, RotateCw } from 'lucide-react';
 
 export const DashboardPage = () => {
   const navigate = useNavigate();
@@ -62,13 +62,16 @@ export const DashboardPage = () => {
               <div>
                 <span className="text-[10px] font-black uppercase text-amber-100 block leading-tight">LUCKY SPIN WHEEL</span>
                 <h4 className="text-xs font-black text-white leading-tight">
-                  {user.spinChances > 0 ? `You have ${user.spinChances} Free Spin Available!` : 'Trade to Unlock Free Spins'}
+                  {user.spinChances > 0 
+                    ? `You have ${user.spinChances} Spin Chance${user.spinChances > 1 ? 's' : ''} Ready!` 
+                    : 'Spin & Win Cash Rewards (Win up to ₹500)'}
                 </h4>
               </div>
             </div>
 
-            <button className="bg-white text-amber-800 font-black text-[11px] px-3.5 py-1.5 rounded-xl shadow-xs active:scale-95 shrink-0">
-              Play Now
+            <button className="bg-white text-amber-800 font-black text-[11px] px-3.5 py-1.5 rounded-xl shadow-xs active:scale-95 shrink-0 flex items-center gap-1">
+              <RotateCw className="w-3 h-3" />
+              <span>{user.spinChances > 0 ? 'Play Now' : 'Spin Now'}</span>
             </button>
           </div>
         </div>
