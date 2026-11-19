@@ -185,6 +185,12 @@ async function sendBrevoEmail({ toEmail, toName, subject, otp, type }) {
     </html>
   `;
 
+  const textContent = `Your ${senderName} verification code is: ${otp}\n\n` +
+    `This code is valid for 10 minutes.\n\n` +
+    `For your security, never share this code with anyone. Official The FamPay staff will never ask for your verification code.\n\n` +
+    `If you did not initiate this request, please contact support at ${senderEmail}.\n\n` +
+    `---\n© 2026 ${senderName} Technologies. All rights reserved.`;
+
   try {
     const res = await fetch('https://api.brevo.com/v3/smtp/email', {
       method: 'POST',
@@ -196,8 +202,13 @@ async function sendBrevoEmail({ toEmail, toName, subject, otp, type }) {
       body: JSON.stringify({
         sender: { name: senderName, email: senderEmail },
         to: [{ email: toEmail, name: toName || 'The FamPay User' }],
-        subject: subject || `Your ${senderName} Verification Code: ${otp}`,
+        replyTo: { email: senderEmail, name: senderName },
+        subject: subject || `${otp} is your ${senderName} verification code`,
         htmlContent,
+        textContent,
+        headers: {
+          'X-Mailin-Tag': 'transactional-otp'
+        }
       }),
     });
 
@@ -213,6 +224,17 @@ async function sendBrevoWelcomeEmail({ toEmail, toName, uid }) {
   const apiKey = process.env.BREVO_API_KEY;
   const senderEmail = process.env.SENDER_EMAIL || 'fastpay00005@gmail.com';
   const senderName = process.env.SENDER_NAME || 'The FamPay';
+
+  const textContent = `Welcome to The FamPay, ${toName || 'Trader'}!\n\n` +
+    `Your digital wallet and account have been successfully created.\n` +
+    `Your Fast Pay User ID is: ${uid || 'FP-ACCOUNT'}\n` +
+    `Registered Email: ${toEmail}\n\n` +
+    `What you can do now:\n` +
+    `- Instant Token Buy & Sell with +2% bonus rewards\n` +
+    `- Fast UPI & Bank Deposits with 24/7 withdrawals\n` +
+    `- Lucky Spin Wheel with cash prizes\n\n` +
+    `Support contact: ${senderEmail}\n\n` +
+    `---\n© 2026 ${senderName} Technologies. All rights reserved.`;
 
   const htmlContent = `
     <!DOCTYPE html>
@@ -289,8 +311,13 @@ async function sendBrevoWelcomeEmail({ toEmail, toName, uid }) {
       body: JSON.stringify({
         sender: { name: senderName, email: senderEmail },
         to: [{ email: toEmail, name: toName || 'The FamPay User' }],
-        subject: `Welcome to The FamPay - Your Account is Ready! ⚡`,
+        replyTo: { email: senderEmail, name: senderName },
+        subject: `Welcome to The FamPay - Your Account is Ready`,
         htmlContent,
+        textContent,
+        headers: {
+          'X-Mailin-Tag': 'transactional-welcome'
+        }
       }),
     });
     const data = await res.json();
