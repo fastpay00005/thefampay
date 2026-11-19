@@ -30,7 +30,7 @@ export const ForgotPasswordPage = () => {
   };
 
   return (
-    <div className="min-h-screen desktop-ambient-bg flex justify-center items-center p-0 sm:py-6 sm:px-4">
+    <div className="min-h-screen w-full bg-[#FAF9FE] sm:bg-[#060812] flex justify-center items-center p-0 sm:py-6 sm:px-4">
       <div className="w-full sm:max-w-[428px] min-h-screen sm:min-h-[880px] sm:max-h-[920px] bg-surface-bg flex flex-col justify-between relative sm:rounded-[40px] sm:shadow-[0_25px_60px_-15px_rgba(0,0,0,0.7),0_0_0_12px_#1E1638] overflow-hidden border-0 sm:border-2 border-purple-500/20 p-6">
         
         {/* Top Header */}
