@@ -500,6 +500,82 @@ app.post('/api/auth/login', async (req, res) => {
   });
 });
 
+// GOOGLE OAUTH SYNC (SIGN IN & SIGN UP)
+app.post('/api/auth/google-sync', async (req, res) => {
+  try {
+    const { email, fullName, avatar, googleId, referralCode } = req.body;
+
+    if (!email) {
+      return res.status(400).json({ success: false, message: 'Google account email is required' });
+    }
+
+    const cleanEmail = email.toLowerCase().trim();
+    let user = await findUserByEmailOrMobile(cleanEmail);
+
+    if (user) {
+      if (user.status === 'blocked') {
+        return res.status(403).json({ success: false, message: 'This account has been suspended. Please contact customer support.' });
+      }
+
+      // Update avatar or name if newly provided
+      const updates = {};
+      if (!user.avatar && avatar) updates.avatar = avatar;
+      if ((!user.fullName || user.fullName === 'FamPay User') && fullName) updates.fullName = fullName;
+      if (Object.keys(updates).length > 0) {
+        await updateUserRecord(user.id, updates);
+        Object.assign(user, updates);
+      }
+
+      return res.json({
+        success: true,
+        isNewUser: false,
+        message: `Welcome back, ${user.fullName || 'User'}!`,
+        user,
+        token: `fampay_jwt_${Date.now()}`
+      });
+    }
+
+    // User does not exist -> Create new account with Zero-KYC wallet
+    const displayName = fullName && fullName.trim() !== '' ? fullName.trim() : cleanEmail.split('@')[0];
+    const newUser = await createNewUser({
+      fullName: displayName,
+      email: cleanEmail,
+      mobile: '',
+      password: `google_oauth_${Date.now()}_${Math.random().toString(36).substring(7)}`,
+      avatar: avatar || '',
+      referralCode: referralCode || null,
+      inrBalance: 0,
+      usdtBalance: 0
+    });
+
+    // 1. Dispatch Welcome Email via Brevo
+    sendBrevoWelcomeEmail({
+      toEmail: cleanEmail,
+      toName: displayName,
+      uid: newUser.uid || newUser.id
+    }).catch(err => console.warn('[Google Auth Welcome Email]', err.message));
+
+    // 2. Dispatch Welcome Notification
+    await addNotification({
+      targetType: 'SPECIFIC',
+      targetUserId: newUser.id,
+      title: '🎉 Welcome to The FamPay',
+      message: 'Welcome to The FamPay! Instant fast token exchange and digital wallet with 24/7 withdrawals.'
+    }).catch(err => console.warn('[Google Auth Notification]', err.message));
+
+    return res.json({
+      success: true,
+      isNewUser: true,
+      message: 'Account created and authenticated with Google!',
+      user: newUser,
+      token: `fampay_jwt_${Date.now()}`
+    });
+  } catch (err) {
+    console.error('[Google Sync Error]:', err);
+    return res.status(500).json({ success: false, message: 'Internal server error during Google synchronization' });
+  }
+});
+
 // RESET PASSWORD WITH OTP
 app.post('/api/auth/reset-password', async (req, res) => {
   const { email, otp, newPassword } = req.body;

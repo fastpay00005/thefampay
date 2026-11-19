@@ -24,6 +24,7 @@ import { RegisterPage } from './pages/RegisterPage';
 import { VerifyOtpPage } from './pages/VerifyOtpPage';
 import { ForgotPasswordPage } from './pages/ForgotPasswordPage';
 import { ResetPasswordPage } from './pages/ResetPasswordPage';
+import { AuthCallbackPage } from './pages/AuthCallbackPage';
 
 // Standalone Dedicated Admin Portal
 import { AdminRoute } from './admin/components/AdminRoute';
@@ -59,6 +60,7 @@ export default function App() {
             <Route path="/verify-otp" element={<VerifyOtpPage />} />
             <Route path="/forgot-password" element={<ForgotPasswordPage />} />
             <Route path="/reset-password" element={<ResetPasswordPage />} />
+            <Route path="/auth/callback" element={<AuthCallbackPage />} />
 
             {/* ========================================= */}
             {/* 2. PROTECTED USER MOBILE APP (5 Spec Tabs)*/}

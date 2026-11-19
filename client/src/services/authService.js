@@ -85,6 +85,20 @@ export const authService = {
     });
   },
 
+  // Sync Google OAuth User with FamPay Backend
+  async googleSync(payload) {
+    const data = await safeFetchJson(`${API_BASE}/google-sync`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(payload),
+    });
+    if (data.success && data.token) {
+      localStorage.setItem('fampay_token', data.token);
+      localStorage.setItem('fampay_user', JSON.stringify(data.user));
+    }
+    return data;
+  },
+
   // Sign Out
   logout() {
     localStorage.removeItem('fampay_token');
