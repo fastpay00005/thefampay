@@ -3,7 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { supabase } from '../services/supabaseClient';
 import { authService } from '../services/authService';
 import { useApp } from '../context/AppContext';
-import { Loader2, ShieldCheck, AlertCircle } from 'lucide-react';
+import { Loader2, AlertCircle } from 'lucide-react';
 
 export const AuthCallbackPage = () => {
   const navigate = useNavigate();
@@ -15,10 +15,10 @@ export const AuthCallbackPage = () => {
 
     async function handleAuth() {
       try {
-        // 1. Check for OAuth error in URL hash or params
         const hash = window.location.hash || '';
         const params = new URLSearchParams(window.location.search);
-        
+
+        // 1. Check for OAuth errors in URL
         if (params.get('error') || hash.includes('error=')) {
           const errDesc = params.get('error_description') || 'Google sign-in was cancelled or encountered an error';
           if (isMounted) {
@@ -29,41 +29,75 @@ export const AuthCallbackPage = () => {
           return;
         }
 
-        // 2. Fetch Supabase OAuth Session
-        const { data: { session }, error: sessionError } = await supabase.auth.getSession();
+        let activeSession = null;
 
-        if (sessionError || !session?.user) {
-          // If session is still propagating, wait briefly and re-check once
-          await new Promise(r => setTimeout(r, 1200));
-          const retry = await supabase.auth.getSession();
-          if (!retry.data?.session?.user) {
-            if (isMounted) {
-              setErrorMsg('Unable to retrieve Google session. Please try logging in again.');
-              showToast('Authentication timed out. Please try again.', 'error');
-              setTimeout(() => navigate('/login', { replace: true }), 2000);
+        // 2. PKCE code exchange (standard in modern Supabase OAuth)
+        const code = params.get('code');
+        if (code) {
+          try {
+            const { data, error } = await supabase.auth.exchangeCodeForSession(code);
+            if (data?.session) {
+              activeSession = data.session;
+            } else if (error) {
+              console.warn('[PKCE Exchange Error]:', error.message);
             }
-            return;
+          } catch (codeErr) {
+            console.warn('[PKCE Code Exchange Exception]:', codeErr);
           }
         }
 
-        const activeSession = session || (await supabase.auth.getSession()).data.session;
+        // 3. Fallback to getSession() (implicit / hash token flow)
+        if (!activeSession) {
+          const { data: sessionData } = await supabase.auth.getSession();
+          if (sessionData?.session) {
+            activeSession = sessionData.session;
+          }
+        }
+
+        // 4. Fallback: Listen briefly for onAuthStateChange
+        if (!activeSession) {
+          activeSession = await new Promise((resolve) => {
+            let sub = null;
+            const timeout = setTimeout(() => {
+              if (sub) sub.unsubscribe();
+              resolve(null);
+            }, 3000);
+
+            const { data } = supabase.auth.onAuthStateChange((event, session) => {
+              if (session) {
+                clearTimeout(timeout);
+                if (data?.subscription) data.subscription.unsubscribe();
+                resolve(session);
+              }
+            });
+            sub = data?.subscription;
+          });
+        }
+
+        if (!activeSession?.user) {
+          if (isMounted) {
+            setErrorMsg('Unable to retrieve Google session. Please verify Google OAuth configuration in Supabase.');
+            showToast('Authentication timed out. Please try again.', 'error');
+            setTimeout(() => navigate('/login', { replace: true }), 2500);
+          }
+          return;
+        }
+
         const user = activeSession.user;
 
-        // 3. Retrieve any pending referral code stored before redirect
+        // Retrieve any pending referral code stored before redirect
         let pendingRef = '';
         try {
           pendingRef = localStorage.getItem('fampay_pending_ref') || '';
           localStorage.removeItem('fampay_pending_ref');
-        } catch {
-          // ignore
-        }
+        } catch {}
 
         const meta = user.user_metadata || {};
         const email = user.email || '';
         const fullName = meta.full_name || meta.name || email.split('@')[0] || 'FamPay User';
         const avatar = meta.avatar_url || meta.picture || '';
 
-        // 4. Synchronize with The FamPay Backend
+        // Synchronize with The FamPay Backend
         const res = await authService.googleSync({
           email,
           fullName,
@@ -80,7 +114,7 @@ export const AuthCallbackPage = () => {
           }
         } else {
           if (isMounted) {
-            setErrorMsg(res.message || 'Failed to link Google account.');
+            setErrorMsg(res.message || 'Failed to synchronize Google account with wallet.');
             showToast(res.message || 'Authentication error', 'error');
             setTimeout(() => navigate('/login', { replace: true }), 2500);
           }
@@ -132,4 +166,3 @@ export const AuthCallbackPage = () => {
     </div>
   );
 };
-

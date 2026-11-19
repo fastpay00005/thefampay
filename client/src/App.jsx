@@ -44,12 +44,14 @@ import { AdminMaintenancePage } from './admin/pages/AdminMaintenancePage';
 
 import { ToastNotification } from './components/common/ToastNotification';
 import { MaintenanceBarrier } from './components/common/MaintenanceBarrier';
+import { ProfileCompletionModal } from './components/common/ProfileCompletionModal';
 
 export default function App() {
   return (
     <AppProvider>
       <BrowserRouter>
         <ToastNotification />
+        <ProfileCompletionModal />
         <MaintenanceBarrier>
           <Routes>
             {/* ========================================= */}
