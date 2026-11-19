@@ -105,9 +105,12 @@ export const AuthCallbackPage = () => {
   return (
     <div className="h-[100dvh] w-full flex items-center justify-center bg-slate-900 text-white p-4">
       <div className="w-full max-w-sm bg-slate-800/80 backdrop-blur-md rounded-3xl p-6 text-center border border-purple-500/20 shadow-2xl space-y-4">
-        <div className="w-16 h-16 rounded-2xl bg-gradient-to-tr from-[#6D28D9] to-indigo-600 mx-auto flex items-center justify-center shadow-lg border border-white/20">
-          <ShieldCheck className="w-8 h-8 text-white" />
-        </div>
+        <img 
+          src="/favicon.svg" 
+          onError={(e) => { e.currentTarget.src = '/apple-touch-icon.png'; }}
+          alt="The FamPay Logo" 
+          className="w-16 h-16 rounded-2xl shadow-hero mx-auto object-contain border border-white/20 p-1 bg-purple-900/40" 
+        />
 
         <div>
           <h2 className="text-lg font-black text-white">{appName} Auth</h2>

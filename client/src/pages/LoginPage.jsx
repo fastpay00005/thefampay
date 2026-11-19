@@ -86,10 +86,13 @@ export const LoginPage = () => {
           <div className="absolute -bottom-10 -left-10 w-36 h-36 bg-indigo-500/20 rounded-full blur-xl pointer-events-none" />
 
           <div className="relative z-10 flex flex-col items-center text-center">
-            {/* FP 3D Glass Logo */}
-            <div className="w-13 h-13 rounded-2xl bg-white/15 backdrop-blur-md border border-white/25 flex items-center justify-center text-white font-black text-2xl shadow-hero mb-2.5">
-              FP
-            </div>
+            {/* The FamPay Official Logo Icon */}
+            <img 
+              src="/favicon.svg" 
+              onError={(e) => { e.currentTarget.src = '/apple-touch-icon.png'; }}
+              alt="The FamPay Logo" 
+              className="w-14 h-14 rounded-2xl shadow-hero mb-2.5 object-contain border border-white/20 p-0.5 bg-purple-900/40" 
+            />
             <h1 className="text-xl sm:text-2xl font-black text-white tracking-tight leading-tight">
               {appName}
             </h1>
