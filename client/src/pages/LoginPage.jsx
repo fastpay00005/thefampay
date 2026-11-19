@@ -80,10 +80,10 @@ export const LoginPage = () => {
       <div className="w-full sm:max-w-[430px] min-h-screen sm:min-h-0 sm:max-h-[92vh] bg-[#FAF9FE] flex flex-col justify-between relative sm:rounded-[36px] sm:shadow-[0_25px_60px_-15px_rgba(0,0,0,0.7),0_0_0_12px_#1E1638] sm:border-2 sm:border-purple-500/20 overflow-y-auto no-scrollbar">
         
         {/* Top Hero Branded Header */}
-        <div className="relative bg-gradient-to-br from-[#5B1EB7] via-[#6D28D9] to-[#3B0764] text-white pt-10 sm:pt-11 pb-7 px-6 rounded-b-[32px] sm:rounded-b-[36px] shadow-lg shadow-purple-950/20 overflow-hidden shrink-0">
+        <div className="relative bg-gradient-to-br from-[#5B1EB7] via-[#6D28D9] to-[#3B0764] text-white pt-7 pb-5 px-5 rounded-b-[28px] sm:rounded-b-[32px] shadow-lg shadow-purple-950/20 overflow-hidden shrink-0">
           {/* Ambient Lighting Orbs */}
-          <div className="absolute -top-10 -right-10 w-40 h-40 bg-purple-400/20 rounded-full blur-2xl pointer-events-none" />
-          <div className="absolute -bottom-10 -left-10 w-36 h-36 bg-indigo-500/20 rounded-full blur-xl pointer-events-none" />
+          <div className="absolute -top-10 -right-10 w-36 h-36 bg-purple-400/20 rounded-full blur-2xl pointer-events-none" />
+          <div className="absolute -bottom-10 -left-10 w-32 h-32 bg-indigo-500/20 rounded-full blur-xl pointer-events-none" />
 
           <div className="relative z-10 flex flex-col items-center text-center">
             {/* The FamPay Official Logo Icon */}
@@ -91,7 +91,8 @@ export const LoginPage = () => {
               src="/favicon.svg" 
               onError={(e) => { e.currentTarget.src = '/apple-touch-icon.png'; }}
               alt="The FamPay Logo" 
-              className="w-14 h-14 rounded-2xl shadow-hero mb-2.5 object-contain border border-white/20 p-0.5 bg-purple-900/40" 
+              style={{ width: '48px', height: '48px', maxWidth: '48px', maxHeight: '48px' }}
+              className="w-12 h-12 max-w-[48px] max-h-[48px] rounded-2xl shadow-hero mb-2 object-contain border border-white/20 p-0.5 bg-purple-900/40 shrink-0" 
             />
             <h1 className="text-xl sm:text-2xl font-black text-white tracking-tight leading-tight">
               {appName}
