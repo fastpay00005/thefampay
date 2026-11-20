@@ -174,18 +174,6 @@ export const AssetsPage = () => {
           </button>
 
           <button
-            onClick={() => navigate('/token?tab=sell')}
-            className={`p-3 rounded-2xl border flex flex-col items-center justify-center gap-1.5 transition-all active:scale-95 cursor-pointer ${
-              isDark ? 'bg-slate-900/80 border-slate-800 hover:border-purple-600/40 text-slate-100' : 'bg-white border-slate-200 shadow-sm text-slate-900'
-            }`}
-          >
-            <div className="w-8 h-8 rounded-xl bg-emerald-500/15 text-emerald-500 dark:text-emerald-400 flex items-center justify-center font-black">
-              <RefreshCw className="w-4 h-4" />
-            </div>
-            <span className="text-[11px] font-black">Cash Out</span>
-          </button>
-
-          <button
             onClick={() => navigate('/withdraw')}
             className={`p-3 rounded-2xl border flex flex-col items-center justify-center gap-1.5 transition-all active:scale-95 cursor-pointer ${
               isDark ? 'bg-slate-900/80 border-slate-800 hover:border-purple-600/40 text-slate-100' : 'bg-white border-slate-200 shadow-sm text-slate-900'
@@ -195,6 +183,18 @@ export const AssetsPage = () => {
               <Coins className="w-4 h-4" />
             </div>
             <span className="text-[11px] font-black">Withdraw</span>
+          </button>
+
+          <button
+            onClick={() => navigate('/token?tab=sell')}
+            className={`p-3 rounded-2xl border flex flex-col items-center justify-center gap-1.5 transition-all active:scale-95 cursor-pointer ${
+              isDark ? 'bg-slate-900/80 border-slate-800 hover:border-purple-600/40 text-slate-100' : 'bg-white border-slate-200 shadow-sm text-slate-900'
+            }`}
+          >
+            <div className="w-8 h-8 rounded-xl bg-emerald-500/15 text-emerald-500 dark:text-emerald-400 flex items-center justify-center font-black">
+              <RefreshCw className="w-4 h-4" />
+            </div>
+            <span className="text-[11px] font-black">Cash Out</span>
           </button>
 
           <button

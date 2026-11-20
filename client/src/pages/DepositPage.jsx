@@ -4,6 +4,7 @@ import { AppShell } from '../components/layout/AppShell';
 import { apiService } from '../services/apiService';
 import { 
   ArrowDownLeft, 
+  ArrowUpRight,
   Clock, 
   Copy, 
   Check, 
@@ -236,6 +237,29 @@ export const DepositPage = () => {
   return (
     <AppShell title="Deposit Center">
       <div className="px-4 py-4 space-y-4">
+
+        {/* Dedicated Dual-Page Segmented Tab Switcher (Deposit vs Withdraw) */}
+        <div className={`p-1 rounded-2xl border flex items-center gap-1 ${
+          isDark ? 'bg-slate-950/80 border-slate-800' : 'bg-purple-50/80 border-purple-100'
+        }`}>
+          <button
+            onClick={() => navigate('/deposit')}
+            className="flex-1 py-2.5 rounded-xl text-xs font-black bg-[#6D28D9] text-white shadow-sm flex items-center justify-center gap-1.5 transition-all"
+          >
+            <ArrowDownLeft className="w-3.5 h-3.5 stroke-[2.5]" />
+            <span>Deposit Funds</span>
+          </button>
+
+          <button
+            onClick={() => navigate('/withdraw')}
+            className={`flex-1 py-2.5 rounded-xl text-xs font-black transition-all flex items-center justify-center gap-1.5 cursor-pointer ${
+              isDark ? 'text-slate-400 hover:text-white' : 'text-purple-900 hover:text-purple-950'
+            }`}
+          >
+            <ArrowUpRight className="w-3.5 h-3.5 stroke-[2.5]" />
+            <span>Withdraw Funds</span>
+          </button>
+        </div>
 
         {/* 1. Header Banner */}
         <div className={`p-4 sm:p-5 rounded-3xl border relative overflow-hidden transition-all duration-200 ${

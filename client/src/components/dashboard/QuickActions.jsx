@@ -9,16 +9,6 @@ export const QuickActions = () => {
 
   const actions = [
     {
-      label: 'Buy Token',
-      IconComponent: ActionBuy3D,
-      action: () => navigate('/token?tab=buy'),
-    },
-    {
-      label: 'Sell Token',
-      IconComponent: ActionSell3D,
-      action: () => navigate('/token?tab=sell'),
-    },
-    {
       label: 'Deposit',
       IconComponent: ActionDeposit3D,
       action: () => navigate('/deposit'),
@@ -27,6 +17,16 @@ export const QuickActions = () => {
       label: 'Withdraw',
       IconComponent: ActionWithdraw3D,
       action: () => navigate('/withdraw'),
+    },
+    {
+      label: 'Buy Token',
+      IconComponent: ActionBuy3D,
+      action: () => navigate('/token?tab=buy'),
+    },
+    {
+      label: 'Sell Token',
+      IconComponent: ActionSell3D,
+      action: () => navigate('/token?tab=sell'),
     },
   ];
 

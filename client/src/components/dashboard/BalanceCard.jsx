@@ -49,16 +49,16 @@ export const BalanceCard = () => {
               onClick={() => navigate('/deposit')}
               className="w-full py-2.5 px-3 rounded-2xl bg-white text-[#5B1EB7] font-black text-xs flex items-center justify-center gap-2 shadow-md hover:bg-purple-50 active:scale-95 transition-all"
             >
-              <PlusCircle className="w-4 h-4 stroke-[2.5]" />
-              <span>Add Money</span>
+              <ArrowDownLeft className="w-4 h-4 stroke-[2.5]" />
+              <span>Deposit</span>
             </button>
 
             <button
-              onClick={() => navigate('/token')}
+              onClick={() => navigate('/withdraw')}
               className="w-full py-2.5 px-3 rounded-2xl bg-white/15 backdrop-blur-md border border-white/20 text-white font-black text-xs flex items-center justify-center gap-2 hover:bg-white/25 active:scale-95 transition-all"
             >
               <ArrowUpRight className="w-4 h-4 stroke-[2.5]" />
-              <span>Cash Out</span>
+              <span>Withdraw</span>
             </button>
           </div>
 
