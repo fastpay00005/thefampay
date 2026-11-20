@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
 import { AppProvider } from './context/AppContext';
 import { ProtectedRoute } from './components/layout/ProtectedRoute';
@@ -47,10 +47,14 @@ import { ToastNotification } from './components/common/ToastNotification';
 import { MaintenanceBarrier } from './components/common/MaintenanceBarrier';
 import { ProfileCompletionModal } from './components/common/ProfileCompletionModal';
 import { ScrollToTop } from './components/common/ScrollToTop';
+import { SplashScreen } from './components/common/SplashScreen';
 
 export default function App() {
+  const [showSplash, setShowSplash] = useState(true);
+
   return (
     <AppProvider>
+      {showSplash && <SplashScreen minDisplayTime={1600} onFinished={() => setShowSplash(false)} />}
       <BrowserRouter>
         <ScrollToTop />
         <ToastNotification />
