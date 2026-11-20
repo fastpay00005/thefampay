@@ -17,57 +17,8 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Noto+Color+Emoji&family=Plus+Jakarta+Sans:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
-    <style>
-      @keyframes fampayPulse {
-        0% { transform: scale(0.85); opacity: 0.9; }
-        100% { transform: scale(1.6); opacity: 0; }
-      }
-      @keyframes fampayFloat {
-        0%, 100% { transform: translateY(0px) scale(1); }
-        50% { transform: translateY(-7px) scale(1.02); }
-      }
-      @keyframes fampayLoading {
-        0% { transform: translateX(-100%); }
-        50% { transform: translateX(20%); }
-        100% { transform: translateX(200%); }
-      }
-    </style>
   </head>
   <body class="bg-[#FAF9FE] text-[#1E1B4B] antialiased select-none selection:bg-purple-600 selection:text-white">
-    <!-- Zero-Delay Instant Pre-React Animated Splash Screen -->
-    <div id="app-splash-preloader" style="position:fixed;inset:0;z-index:9999999;background:radial-gradient(circle at 50% 40%, #1c0e3a 0%, #0c081e 50%, #060410 100%);display:flex;flex-direction:column;align-items:center;justify-content:space-between;padding:48px 24px 32px;font-family:'Plus Jakarta Sans',sans-serif;color:#ffffff;transition:opacity 0.4s ease-out;box-sizing:border-box;">
-      <div style="position:absolute;top:30%;left:50%;transform:translate(-50%,-50%);width:280px;height:280px;background:rgba(124,58,237,0.25);border-radius:50%;filter:blur(80px);pointer-events:none;"></div>
-
-      <div style="display:flex;align-items:center;gap:6px;padding:4px 12px;border-radius:9999px;background:rgba(255,255,255,0.06);border:1px solid rgba(255,255,255,0.12);font-size:10px;font-weight:700;letter-spacing:1px;color:#e9d5ff;text-transform:uppercase;">
-        ⚡ The FamPay App
-      </div>
-
-      <div style="display:flex;flex-direction:column;align-items:center;text-align:center;">
-        <div style="position:relative;display:flex;align-items:center;justify-content:center;margin-bottom:24px;">
-          <div style="position:absolute;width:140px;height:140px;border-radius:50%;border:1.5px solid rgba(168,85,247,0.4);animation:fampayPulse 2s cubic-bezier(0,0,0.2,1) infinite;"></div>
-          <div style="width:96px;height:96px;border-radius:26px;background:linear-gradient(135deg,#7C3AED,#5B1EB7,#2E0854);display:flex;align-items:center;justify-content:center;box-shadow:0 12px 36px rgba(109,40,217,0.6);border:1.5px solid rgba(251,191,36,0.6);animation:fampayFloat 2.8s ease-in-out infinite;">
-            <img src="/favicon.svg" alt="FamPay" style="width:58px;height:58px;filter:drop-shadow(0 4px 12px rgba(251,191,36,0.7));" />
-          </div>
-        </div>
-
-        <div style="font-size:28px;font-weight:900;letter-spacing:-0.5px;background:linear-gradient(135deg,#ffffff 40%,#e9d5ff 80%,#fde68a 100%);-webkit-background-clip:text;-webkit-text-fill-color:transparent;text-shadow:0 4px 16px rgba(124,58,237,0.3);">
-          The FamPay
-        </div>
-
-        <div style="margin-top:8px;font-size:11px;font-weight:700;color:#c084fc;background:rgba(255,255,255,0.08);border:1px solid rgba(255,255,255,0.12);padding:4px 14px;border-radius:9999px;">
-          Instant Digital Wallet & VIP Exchange
-        </div>
-
-        <div style="margin-top:32px;width:220px;height:6px;background:rgba(255,255,255,0.12);border-radius:9999px;overflow:hidden;position:relative;border:1px solid rgba(255,255,255,0.08);">
-          <div style="width:50%;height:100%;background:linear-gradient(90deg,#fbbf24,#a855f7,#6366f1);border-radius:9999px;animation:fampayLoading 1.4s ease-in-out infinite;"></div>
-        </div>
-      </div>
-
-      <div style="font-size:10px;font-weight:600;color:rgba(216,180,254,0.6);display:flex;align-items:center;gap:6px;">
-        🔒 256-Bit SSL Encrypted • Zero-KYC Protected
-      </div>
-    </div>
-
     <div id="root"></div>
     <script type="module" src="/src/main.jsx"></script>
   </body>
