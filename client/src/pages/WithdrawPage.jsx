@@ -148,32 +148,38 @@ export const WithdrawPage = () => {
 
         {/* Dedicated Dual-Page Segmented Tab Switcher (Deposit vs Withdraw) */}
         <div className={`p-1 rounded-2xl border flex items-center gap-1 ${
-          isDark ? 'bg-slate-950/80 border-slate-800' : 'bg-purple-50/80 border-purple-100'
+          isDark ? 'bg-slate-900 border-slate-800' : 'bg-slate-100 border-slate-200/80'
         }`}>
           <button
             onClick={() => navigate('/deposit')}
-            className={`flex-1 py-2.5 rounded-xl text-xs font-black transition-all flex items-center justify-center gap-1.5 cursor-pointer ${
-              isDark ? 'text-slate-400 hover:text-white' : 'text-purple-900 hover:text-purple-950'
+            className={`flex-1 py-2.5 rounded-xl text-xs font-bold flex items-center justify-center gap-1.5 transition-all cursor-pointer ${
+              location.pathname === '/deposit'
+                ? 'bg-white dark:bg-slate-800 text-slate-900 dark:text-white shadow-xs'
+                : 'text-slate-500 dark:text-slate-400 hover:text-slate-800 dark:hover:text-slate-200'
             }`}
           >
-            <ArrowDownLeft className="w-3.5 h-3.5 stroke-[2.5]" />
+            <ArrowDownLeft className="w-3.5 h-3.5 stroke-[2.5] text-[#5B1EB7] dark:text-purple-400" />
             <span>Deposit Funds</span>
           </button>
 
           <button
             onClick={() => navigate('/withdraw')}
-            className="flex-1 py-2.5 rounded-xl text-xs font-black bg-[#6D28D9] text-white shadow-sm flex items-center justify-center gap-1.5 transition-all"
+            className={`flex-1 py-2.5 rounded-xl text-xs font-bold flex items-center justify-center gap-1.5 transition-all ${
+              location.pathname === '/withdraw'
+                ? 'bg-white dark:bg-slate-800 text-slate-900 dark:text-white shadow-xs'
+                : 'text-slate-500 dark:text-slate-400 hover:text-slate-800 dark:hover:text-slate-200'
+            }`}
           >
-            <ArrowUpRight className="w-3.5 h-3.5 stroke-[2.5]" />
+            <ArrowUpRight className="w-3.5 h-3.5 stroke-[2.5] text-emerald-600 dark:text-emerald-400" />
             <span>Withdraw Funds</span>
           </button>
         </div>
 
         {/* 1. Spendable Balance Card */}
-        <div className={`p-5 rounded-3xl border relative overflow-hidden ${
+        <div className={`p-5 rounded-3xl text-white shadow-xl relative overflow-hidden transition-all duration-200 ${
           isDark 
-            ? 'bg-gradient-to-br from-[#1A1230] via-[#2A1654] to-[#160D2D] border-purple-900/50 shadow-xl' 
-            : 'bg-gradient-to-br from-purple-700 via-indigo-700 to-purple-900 text-white border-purple-400/30 shadow-lg shadow-purple-600/20'
+            ? 'bg-gradient-to-br from-[#1E113E] via-[#2D1663] to-[#140B2D] border border-purple-800/40 shadow-purple-950/40' 
+            : 'bg-gradient-to-br from-[#6820DA] via-[#5B1EB7] to-[#431093] shadow-purple-900/25'
         }`}>
           <div className="flex items-center justify-between">
             <span className="text-xs font-bold text-purple-200">Spendable Available Balance</span>
@@ -281,7 +287,7 @@ export const WithdrawPage = () => {
             <button
               type="submit"
               disabled={submitting || availableBal < minLimit || userAccounts.length === 0}
-              className="w-full py-3.5 rounded-2xl bg-gradient-to-r from-purple-600 via-indigo-600 to-purple-700 text-white font-black text-sm shadow-xl shadow-purple-600/25 active:scale-95 transition-all disabled:opacity-50 flex items-center justify-center gap-2 cursor-pointer"
+              className="w-full py-3.5 rounded-2xl bg-[#5B1EB7] hover:bg-[#4C189D] text-white font-extrabold text-sm shadow-md active:scale-98 transition-all disabled:opacity-50 flex items-center justify-center gap-2 cursor-pointer"
             >
               <ArrowUpRight className="w-4 h-4" />
               {submitting ? 'Processing Payout...' : 'Submit Withdrawal Request'}

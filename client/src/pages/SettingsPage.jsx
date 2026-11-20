@@ -95,12 +95,14 @@ export const SettingsPage = () => {
         
         {/* SEGMENTED TAB SWITCHER (Profile vs Settings) */}
         <div className={`p-1 rounded-2xl border flex items-center gap-1 ${
-          isDark ? 'bg-slate-950/80 border-slate-800' : 'bg-purple-50/80 border-purple-100'
+          isDark ? 'bg-slate-900 border-slate-800' : 'bg-slate-100 border-slate-200/80'
         }`}>
           <button
             onClick={() => navigate('/profile')}
-            className={`flex-1 py-2.5 rounded-xl text-xs font-black transition-all flex items-center justify-center gap-1.5 ${
-              isDark ? 'text-slate-400 hover:text-white' : 'text-purple-900 hover:text-purple-950'
+            className={`flex-1 py-2.5 rounded-xl text-xs font-bold transition-all flex items-center justify-center gap-1.5 cursor-pointer ${
+              location.pathname === '/profile'
+                ? 'bg-white dark:bg-slate-800 text-slate-900 dark:text-white shadow-xs'
+                : 'text-slate-500 dark:text-slate-400 hover:text-slate-800 dark:hover:text-slate-200'
             }`}
           >
             <span>👤 My Profile</span>
@@ -108,7 +110,11 @@ export const SettingsPage = () => {
 
           <button
             onClick={() => navigate('/settings')}
-            className="flex-1 py-2.5 rounded-xl text-xs font-black bg-[#6D28D9] text-white shadow-sm flex items-center justify-center gap-1.5"
+            className={`flex-1 py-2.5 rounded-xl text-xs font-bold flex items-center justify-center gap-1.5 transition-all ${
+              location.pathname === '/settings'
+                ? 'bg-white dark:bg-slate-800 text-slate-900 dark:text-white shadow-xs'
+                : 'text-slate-500 dark:text-slate-400 hover:text-slate-800 dark:hover:text-slate-200'
+            }`}
           >
             <span>⚙️ App Settings</span>
           </button>

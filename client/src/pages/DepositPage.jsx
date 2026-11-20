@@ -240,23 +240,29 @@ export const DepositPage = () => {
 
         {/* Dedicated Dual-Page Segmented Tab Switcher (Deposit vs Withdraw) */}
         <div className={`p-1 rounded-2xl border flex items-center gap-1 ${
-          isDark ? 'bg-slate-950/80 border-slate-800' : 'bg-purple-50/80 border-purple-100'
+          isDark ? 'bg-slate-900 border-slate-800' : 'bg-slate-100 border-slate-200/80'
         }`}>
           <button
             onClick={() => navigate('/deposit')}
-            className="flex-1 py-2.5 rounded-xl text-xs font-black bg-[#6D28D9] text-white shadow-sm flex items-center justify-center gap-1.5 transition-all"
+            className={`flex-1 py-2.5 rounded-xl text-xs font-bold flex items-center justify-center gap-1.5 transition-all ${
+              location.pathname === '/deposit'
+                ? 'bg-white dark:bg-slate-800 text-slate-900 dark:text-white shadow-xs'
+                : 'text-slate-500 dark:text-slate-400 hover:text-slate-800 dark:hover:text-slate-200'
+            }`}
           >
-            <ArrowDownLeft className="w-3.5 h-3.5 stroke-[2.5]" />
+            <ArrowDownLeft className="w-3.5 h-3.5 stroke-[2.5] text-[#5B1EB7] dark:text-purple-400" />
             <span>Deposit Funds</span>
           </button>
 
           <button
             onClick={() => navigate('/withdraw')}
-            className={`flex-1 py-2.5 rounded-xl text-xs font-black transition-all flex items-center justify-center gap-1.5 cursor-pointer ${
-              isDark ? 'text-slate-400 hover:text-white' : 'text-purple-900 hover:text-purple-950'
+            className={`flex-1 py-2.5 rounded-xl text-xs font-bold flex items-center justify-center gap-1.5 transition-all cursor-pointer ${
+              location.pathname === '/withdraw'
+                ? 'bg-white dark:bg-slate-800 text-slate-900 dark:text-white shadow-xs'
+                : 'text-slate-500 dark:text-slate-400 hover:text-slate-800 dark:hover:text-slate-200'
             }`}
           >
-            <ArrowUpRight className="w-3.5 h-3.5 stroke-[2.5]" />
+            <ArrowUpRight className="w-3.5 h-3.5 stroke-[2.5] text-emerald-600 dark:text-emerald-400" />
             <span>Withdraw Funds</span>
           </button>
         </div>
@@ -269,8 +275,8 @@ export const DepositPage = () => {
         }`}>
           <div className="flex items-center justify-between">
             <span className="px-2.5 py-1 rounded-full text-[10px] font-black uppercase tracking-wider bg-white/20 backdrop-blur-md text-white border border-white/30 flex items-center gap-1.5">
-              <Sparkles className="w-3.5 h-3.5 text-amber-300" />
-              Instant Bonus Included
+              <ShieldCheck className="w-3.5 h-3.5 text-emerald-300" />
+              Verified P2P Deposit
             </span>
             <button
               onClick={() => setShowHistory(!showHistory)}
@@ -292,30 +298,30 @@ export const DepositPage = () => {
         {/* 2. DUAL-RAIL SWITCHER (Per PDF Spec 2.12: INR vs USDT) */}
         {!activeOrder && (
           <div className={`p-1 rounded-2xl border flex items-center gap-1 ${
-            isDark ? 'bg-slate-950/80 border-slate-800' : 'bg-purple-50/80 border-purple-100'
+            isDark ? 'bg-slate-900 border-slate-800' : 'bg-slate-100 border-slate-200/80'
           }`}>
             <button
               onClick={() => setDepositRail('INR')}
               className={`flex-1 py-2 px-2 rounded-xl transition-all flex flex-col items-center justify-center leading-tight ${
                 depositRail === 'INR'
-                  ? 'bg-[#6D28D9] text-white shadow-sm'
-                  : isDark ? 'text-slate-400 hover:text-white' : 'text-purple-900 hover:text-purple-950'
+                  ? 'bg-white dark:bg-slate-800 text-slate-900 dark:text-white shadow-xs font-bold'
+                  : 'text-slate-500 dark:text-slate-400 font-medium hover:text-slate-800 dark:hover:text-slate-200'
               }`}
             >
-              <span className="text-xs font-black">🇮🇳 INR Deposit</span>
-              <span className="text-[9.5px] opacity-80 mt-0.5">UPI • Bank • QR</span>
+              <span className="text-xs font-bold">🇮🇳 INR Deposit</span>
+              <span className="text-[9.5px] opacity-75 mt-0.5">UPI • Bank • QR</span>
             </button>
 
             <button
               onClick={() => setDepositRail('USDT')}
               className={`flex-1 py-2 px-2 rounded-xl transition-all flex flex-col items-center justify-center leading-tight ${
                 depositRail === 'USDT'
-                  ? 'bg-[#6D28D9] text-white shadow-sm'
-                  : isDark ? 'text-slate-400 hover:text-white' : 'text-purple-900 hover:text-purple-950'
+                  ? 'bg-white dark:bg-slate-800 text-slate-900 dark:text-white shadow-xs font-bold'
+                  : 'text-slate-500 dark:text-slate-400 font-medium hover:text-slate-800 dark:hover:text-slate-200'
               }`}
             >
-              <span className="text-xs font-black">💎 USDT Crypto</span>
-              <span className="text-[9.5px] opacity-80 mt-0.5">TRC20 • BEP20</span>
+              <span className="text-xs font-bold">💎 USDT Crypto</span>
+              <span className="text-[9.5px] opacity-75 mt-0.5">TRC20 • BEP20</span>
             </button>
           </div>
         )}

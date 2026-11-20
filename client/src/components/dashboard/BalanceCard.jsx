@@ -44,20 +44,20 @@ export const BalanceCard = () => {
           </div>
 
           {/* Dual Action Buttons right inside Balance Card */}
-          <div className="grid grid-cols-2 gap-2.5 mb-3.5">
+          <div className="grid grid-cols-2 gap-3 mb-3.5">
             <button
               onClick={() => navigate('/deposit')}
-              className="w-full py-2.5 px-3 rounded-2xl bg-white text-[#5B1EB7] font-black text-xs flex items-center justify-center gap-2 shadow-md hover:bg-purple-50 active:scale-95 transition-all"
+              className="w-full py-3 px-3 rounded-2xl bg-white text-slate-900 font-extrabold text-xs flex items-center justify-center gap-2 shadow-sm hover:bg-slate-50 active:scale-95 transition-all"
             >
-              <ArrowDownLeft className="w-4 h-4 stroke-[2.5]" />
+              <ArrowDownLeft className="w-4 h-4 text-[#5B1EB7] stroke-[2.5]" />
               <span>Deposit</span>
             </button>
 
             <button
               onClick={() => navigate('/withdraw')}
-              className="w-full py-2.5 px-3 rounded-2xl bg-white/15 backdrop-blur-md border border-white/20 text-white font-black text-xs flex items-center justify-center gap-2 hover:bg-white/25 active:scale-95 transition-all"
+              className="w-full py-3 px-3 rounded-2xl bg-white text-slate-900 font-extrabold text-xs flex items-center justify-center gap-2 shadow-sm hover:bg-slate-50 active:scale-95 transition-all"
             >
-              <ArrowUpRight className="w-4 h-4 stroke-[2.5]" />
+              <ArrowUpRight className="w-4 h-4 text-emerald-600 stroke-[2.5]" />
               <span>Withdraw</span>
             </button>
           </div>
