@@ -27,15 +27,15 @@ const STATE_FILE = 'fampay_db_state.json';
 const CACHE_TTL = {
   USERS: 15 * 1000,         // 15s cache
   TRANSACTIONS: 15 * 1000,  // 15s cache
-  CHANNELS: 60 * 1000,      // 60s cache
-  SETTINGS: 60 * 1000,      // 60s cache
-  TASKS: 30 * 1000,         // 30s cache
+  CHANNELS: 5 * 1000,       // 5s cache (fast admin sync)
+  SETTINGS: 5 * 1000,       // 5s cache (fast admin sync)
+  TASKS: 15 * 1000,         // 15s cache
   NOTIFICATIONS: 15 * 1000, // 15s cache
-  UPI_ACCOUNTS: 15 * 1000,  // 15s cache
-  SELL_REQUESTS: 15 * 1000, // 15s cache
-  DEPOSIT_ORDERS: 15 * 1000,// 15s cache
-  BANNERS: 60 * 1000,       // 60s cache
-  MAINTENANCE: 30 * 1000    // 30s cache
+  UPI_ACCOUNTS: 10 * 1000,  // 10s cache
+  SELL_REQUESTS: 10 * 1000, // 10s cache
+  DEPOSIT_ORDERS: 10 * 1000,// 10s cache
+  BANNERS: 5 * 1000,        // 5s cache (fast admin sync)
+  MAINTENANCE: 5 * 1000     // 5s cache (fast admin sync)
 };
 
 const cache = {
@@ -1282,35 +1282,50 @@ export async function getAppSettings() {
     return cache.settings.data;
   }
 
-  if (sqlTablesAvailable) {
+  try {
     const { data, error } = await supabase.from('settings').select('*');
     if (!error && data && data.length > 0) {
       const settingsObj = {};
       data.forEach(item => {
         settingsObj[item.key] = item.value;
       });
-      const resolved = { ...dbState.settings, ...settingsObj };
+
+      // Deep merge base settings with database overrides so nested keys are preserved
+      const resolved = { ...(dbState.settings || {}) };
+      for (const [k, val] of Object.entries(settingsObj)) {
+        if (val && typeof val === 'object' && !Array.isArray(val) && resolved[k] && typeof resolved[k] === 'object' && !Array.isArray(resolved[k])) {
+          resolved[k] = { ...resolved[k], ...val };
+        } else {
+          resolved[k] = val;
+        }
+      }
+
+      dbState.settings = resolved;
       cache.settings.data = resolved;
       cache.settings.lastFetched = Date.now();
       return resolved;
     }
+  } catch (e) {
+    console.warn('SQL getAppSettings error:', e.message);
   }
   return dbState.settings;
 }
 
 export async function updateAppSetting(key, value) {
-  dbState.settings[key] = { ...(dbState.settings[key] || {}), ...value };
+  if (value && typeof value === 'object' && !Array.isArray(value)) {
+    dbState.settings[key] = { ...(dbState.settings[key] || {}), ...value };
+  } else {
+    dbState.settings[key] = value;
+  }
 
-  if (sqlTablesAvailable) {
-    try {
-      await supabase.from('settings').upsert({
-        key,
-        value: dbState.settings[key],
-        updated_at: new Date().toISOString()
-      });
-    } catch (err) {
-      console.warn('SQL upsert settings error:', err.message);
-    }
+  try {
+    await supabase.from('settings').upsert({
+      key,
+      value: dbState.settings[key],
+      updated_at: new Date().toISOString()
+    });
+  } catch (err) {
+    console.warn('SQL upsert settings error:', err.message);
   }
 
   invalidateCache('settings');

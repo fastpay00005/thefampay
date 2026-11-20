@@ -86,7 +86,8 @@ export const DepositPage = () => {
         setActiveOrder(orderRes.value.order);
       }
       if (settingsRes.status === 'fulfilled' && settingsRes.value?.settings) {
-        const r = Number(settingsRes.value.settings.usdtInrRate || settingsRes.value.settings.usdtRate || 88.50);
+        const s = settingsRes.value.settings;
+        const r = Number(s.rates?.usdtInrRate || s.rates?.marketRate || s.usdtInrRate || s.usdtRate || 88.50);
         setUsdtRate(r);
       }
       if (txRes.status === 'fulfilled' && txRes.value?.success) {

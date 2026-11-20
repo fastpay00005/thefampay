@@ -14,7 +14,8 @@ export const AdminSettingsPage = () => {
     setSupportLinks,
     appName,
     setAppName,
-    showToast 
+    showToast,
+    refreshSettings
   } = useApp();
 
   const [appNameInput, setAppNameInput] = useState(appName || 'The FamPay');
@@ -77,9 +78,11 @@ export const AdminSettingsPage = () => {
         globalSellEnabled: globalSell,
       };
       const updatedSupport = {
-        telegramChannel: tgChannel,
-        telegramGroup: tgGroup,
-        whatsapp: waSupport,
+        telegramChannel: tgChannel.trim(),
+        telegramGroup: tgGroup.trim(),
+        telegramSupport: tgChannel.trim(),
+        whatsapp: waSupport.trim(),
+        whatsappSupport: waSupport.trim(),
       };
 
       setMarketSettings(prev => ({
@@ -102,6 +105,7 @@ export const AdminSettingsPage = () => {
         setAppName(updatedGeneral.appName);
         localStorage.setItem('fampay_app_name', updatedGeneral.appName);
         document.title = updatedGeneral.appName;
+        if (refreshSettings) refreshSettings();
         showToast('Platform settings saved successfully to Supabase!', 'success');
       } else {
         showToast(res.message || 'Saved settings', 'info');

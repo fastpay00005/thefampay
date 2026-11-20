@@ -15,7 +15,7 @@ export const AdminOverviewPage = () => {
   const location = useLocation();
   const { isDark } = useAdminTheme();
 
-  const { allUsers, transactions, marketSettings, loadAdminData, showToast } = useApp();
+  const { allUsers, transactions, marketSettings, loadAdminData, showToast, refreshSettings } = useApp();
 
   // Modals for Quick Actions
   const [showAddUserModal, setShowAddUserModal] = useState(false);
@@ -137,6 +137,7 @@ export const AdminOverviewPage = () => {
       if (res.success) {
         showToast('Token pricing configuration saved to Supabase!', 'success');
         setShowPriceModal(false);
+        if (refreshSettings) refreshSettings();
         await loadAdminData();
       } else {
         showToast('Failed to update price settings', 'error');

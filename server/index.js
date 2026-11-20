@@ -2025,13 +2025,32 @@ app.get('/api/admin/settings', async (req, res) => {
 });
 
 app.put('/api/admin/settings', async (req, res) => {
-  const { rates, support, spin, general } = req.body;
-  if (rates) await updateAppSetting('rates', rates);
-  if (support) await updateAppSetting('support', support);
-  if (spin) await updateAppSetting('spin', spin);
-  if (general) await updateAppSetting('general', general);
-  const updatedSettings = await getAppSettings();
-  return res.json({ success: true, message: 'Settings saved to Supabase!', settings: updatedSettings });
+  try {
+    const body = req.body || {};
+    
+    // Normalize support links if provided
+    if (body.support && typeof body.support === 'object') {
+      const wa = body.support.whatsapp || body.support.whatsappSupport || '';
+      const tg = body.support.telegramChannel || body.support.telegramSupport || '';
+      body.support.whatsapp = wa;
+      body.support.whatsappSupport = wa;
+      body.support.telegramChannel = tg;
+      body.support.telegramSupport = tg;
+    }
+
+    // Save all provided setting categories dynamically
+    for (const [key, val] of Object.entries(body)) {
+      if (val !== undefined && val !== null) {
+        await updateAppSetting(key, val);
+      }
+    }
+
+    const updatedSettings = await getAppSettings();
+    return res.json({ success: true, message: 'Settings saved to Supabase!', settings: updatedSettings });
+  } catch (err) {
+    console.error('Update admin settings error:', err);
+    return res.status(500).json({ success: false, message: err.message });
+  }
 });
 
 // Admin: Broadcast Notifications

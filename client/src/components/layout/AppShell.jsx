@@ -207,7 +207,7 @@ export const AppShell = ({ children, hideHeader = false, hideBottomNav = false, 
 
                 {/* WhatsApp Support */}
                 <a
-                  href={supportLinks?.whatsappSupport || 'https://wa.me/919876543210'}
+                  href={supportLinks?.whatsappSupport || supportLinks?.whatsapp || 'https://wa.me/919876543210'}
                   target="_blank"
                   rel="noreferrer"
                   onClick={() => setShowSupportModal(false)}

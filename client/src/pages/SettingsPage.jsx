@@ -317,7 +317,7 @@ export const SettingsPage = () => {
             </a>
 
             <a
-              href={supportLinks?.whatsappSupport || 'https://wa.me/919999999999'}
+              href={supportLinks?.whatsappSupport || supportLinks?.whatsapp || 'https://wa.me/919999999999'}
               target="_blank"
               rel="noreferrer"
               className={`p-3 rounded-2xl border flex items-center gap-2 text-xs font-bold transition-all ${

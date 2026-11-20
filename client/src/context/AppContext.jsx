@@ -223,9 +223,30 @@ export const AppProvider = ({ children }) => {
       }
 
       if (settingsRes.status === 'fulfilled' && settingsRes.value?.success) {
-        const s = settingsRes.value.settings;
-        if (s.rates) setMarketSettings(prev => ({ ...prev, ...s.rates }));
-        if (s.support) setSupportLinks(prev => ({ ...prev, ...s.support }));
+        const s = settingsRes.value.settings || {};
+        if (s.rates) {
+          setMarketSettings(prev => ({
+            ...prev,
+            ...s.rates,
+            marketRate: Number(s.rates.marketRate ?? s.rates.tokenSellPrice ?? prev.marketRate),
+            appRate: Number(s.rates.appRate ?? s.rates.tokenBuyPrice ?? prev.appRate),
+            tokenBuyPrice: Number(s.rates.tokenBuyPrice ?? s.rates.appRate ?? prev.tokenBuyPrice),
+            tokenSellPrice: Number(s.rates.tokenSellPrice ?? s.rates.marketRate ?? prev.tokenSellPrice),
+            usdtInrRate: Number(s.rates.usdtInrRate ?? prev.usdtInrRate ?? 88.50),
+            extraBonusPercent: Number(s.rates.extraBonusPercent ?? prev.extraBonusPercent),
+            globalSellEnabled: s.rates.globalSellEnabled !== false,
+          }));
+        }
+        if (s.support) {
+          setSupportLinks(prev => ({
+            ...prev,
+            telegramChannel: s.support.telegramChannel || s.support.telegramSupport || prev.telegramChannel,
+            telegramGroup: s.support.telegramGroup || prev.telegramGroup,
+            whatsapp: s.support.whatsapp || s.support.whatsappSupport || prev.whatsapp,
+            whatsappSupport: s.support.whatsappSupport || s.support.whatsapp || prev.whatsappSupport,
+            telegramSupport: s.support.telegramSupport || s.support.telegramChannel || prev.telegramSupport,
+          }));
+        }
         if (s.general) {
           if (s.general.appName) {
             setAppName(s.general.appName);
@@ -255,15 +276,47 @@ export const AppProvider = ({ children }) => {
         setTasks(tasksRes.value.tasks || []);
       }
     } catch (err) {
-      console.warn('Initial global config fetch notice:', err.message);
+      console.warn('Global config fetch notice:', err.message);
     }
   }, []);
 
   useEffect(() => {
+    // Initial fetch
     fetchGlobalConfig();
-    const mInterval = setInterval(checkMaintenance, 15000);
-    return () => clearInterval(mInterval);
-  }, [fetchGlobalConfig, checkMaintenance]);
+
+    // Auto-sync admin configuration & user data every 10 seconds
+    const syncInterval = setInterval(() => {
+      fetchGlobalConfig();
+      if (user?.id) {
+        refreshUserData(user.id);
+      }
+    }, 10000);
+
+    // Instant sync when tab gains focus or mobile app is reopened
+    const handleVisibility = () => {
+      if (document.visibilityState === 'visible') {
+        fetchGlobalConfig();
+        if (user?.id) {
+          refreshUserData(user.id);
+        }
+      }
+    };
+    const handleFocus = () => {
+      fetchGlobalConfig();
+      if (user?.id) {
+        refreshUserData(user.id);
+      }
+    };
+
+    document.addEventListener('visibilitychange', handleVisibility);
+    window.addEventListener('focus', handleFocus);
+
+    return () => {
+      clearInterval(syncInterval);
+      document.removeEventListener('visibilitychange', handleVisibility);
+      window.removeEventListener('focus', handleFocus);
+    };
+  }, [fetchGlobalConfig, refreshUserData, user?.id]);
 
   // 2. Synchronize Live Dynamic User Data (Profile, Transactions, Notifications)
   const refreshUserData = useCallback(async (userId = user.id) => {
@@ -1059,6 +1112,7 @@ export const AppProvider = ({ children }) => {
         warningModal,
         closeWarningModal,
         refreshUserData,
+        refreshSettings: fetchGlobalConfig,
         loadAdminData,
         handleBuyToken,
         handleSellToken,
