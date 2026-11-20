@@ -280,46 +280,8 @@ export const AppProvider = ({ children }) => {
     }
   }, []);
 
-  useEffect(() => {
-    // Initial fetch
-    fetchGlobalConfig();
-
-    // Auto-sync admin configuration & user data every 10 seconds
-    const syncInterval = setInterval(() => {
-      fetchGlobalConfig();
-      if (user?.id) {
-        refreshUserData(user.id);
-      }
-    }, 10000);
-
-    // Instant sync when tab gains focus or mobile app is reopened
-    const handleVisibility = () => {
-      if (document.visibilityState === 'visible') {
-        fetchGlobalConfig();
-        if (user?.id) {
-          refreshUserData(user.id);
-        }
-      }
-    };
-    const handleFocus = () => {
-      fetchGlobalConfig();
-      if (user?.id) {
-        refreshUserData(user.id);
-      }
-    };
-
-    document.addEventListener('visibilitychange', handleVisibility);
-    window.addEventListener('focus', handleFocus);
-
-    return () => {
-      clearInterval(syncInterval);
-      document.removeEventListener('visibilitychange', handleVisibility);
-      window.removeEventListener('focus', handleFocus);
-    };
-  }, [fetchGlobalConfig, refreshUserData, user?.id]);
-
   // 2. Synchronize Live Dynamic User Data (Profile, Transactions, Notifications)
-  const refreshUserData = useCallback(async (userId = user.id) => {
+  const refreshUserData = useCallback(async (userId = user?.id) => {
     try {
       if (!userId) return;
       const [profileRes, txRes, notifRes] = await Promise.allSettled([
@@ -334,8 +296,8 @@ export const AppProvider = ({ children }) => {
           ...prev,
           ...u,
           initials: u.fullName ? u.fullName.split(' ').map(n=>n[0]).join('').toUpperCase() : 'FP',
-          avatar: u.avatar || prev.avatar || 'avatar-1',
-          upiId: u.upiId || prev.upiId || '',
+          avatar: u.avatar || prev?.avatar || 'avatar-1',
+          upiId: u.upiId || prev?.upiId || '',
           fundLocked: Boolean(u.fundLocked),
           sellAllowed: u.sellAllowed !== false,
           accountPaused: Boolean(u.accountPaused),
@@ -380,27 +342,48 @@ export const AppProvider = ({ children }) => {
     } catch (err) {
       console.warn('Sync with Supabase failed:', err.message);
     }
-  }, [user.id]);
+  }, [user?.id]);
 
-  // Smart polling & focus sync when logged in (30 seconds polling, instant on tab focus)
   useEffect(() => {
-    if (!user.isLoggedIn || !user.id) return;
-    refreshUserData(user.id);
+    // Initial fetch
+    fetchGlobalConfig();
+    if (user?.id) {
+      refreshUserData(user.id);
+    }
 
-    const interval = setInterval(() => {
-      if (document.visibilityState === 'visible') {
+    // Auto-sync admin configuration & user data every 10 seconds
+    const syncInterval = setInterval(() => {
+      fetchGlobalConfig();
+      if (user?.id) {
         refreshUserData(user.id);
       }
-    }, 30000); // 30s interval: saves 95%+ Supabase bandwidth/egress
+    }, 10000);
 
-    const onFocus = () => refreshUserData(user.id);
-    window.addEventListener('focus', onFocus);
+    // Instant sync when tab gains focus or mobile app is reopened
+    const handleVisibility = () => {
+      if (document.visibilityState === 'visible') {
+        fetchGlobalConfig();
+        if (user?.id) {
+          refreshUserData(user.id);
+        }
+      }
+    };
+    const handleFocus = () => {
+      fetchGlobalConfig();
+      if (user?.id) {
+        refreshUserData(user.id);
+      }
+    };
+
+    document.addEventListener('visibilitychange', handleVisibility);
+    window.addEventListener('focus', handleFocus);
 
     return () => {
-      clearInterval(interval);
-      window.removeEventListener('focus', onFocus);
+      clearInterval(syncInterval);
+      document.removeEventListener('visibilitychange', handleVisibility);
+      window.removeEventListener('focus', handleFocus);
     };
-  }, [user.isLoggedIn, user.id, refreshUserData]);
+  }, [fetchGlobalConfig, refreshUserData, user?.id]);
 
   // Perform Real Sign In
   const loginUser = (userData) => {
